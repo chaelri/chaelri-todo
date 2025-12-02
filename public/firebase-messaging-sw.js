@@ -1,3 +1,5 @@
+// /public/firebase-messaging-sw.js
+
 // Firebase Messaging Service Worker
 importScripts(
   "https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"
@@ -21,15 +23,20 @@ const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
   console.log(
-    "[firebase-messaging-sw.js] Received background message ",
+    "[firebase-messaging-sw.js] Received background message: ",
     payload
   );
 
+  // The data payload sent from the cloud function is in `payload.data`
   const notificationTitle = payload.data.title;
+  const notificationBody = payload.data.body;
+  const notificationImage = payload.data.imageUrl;
+
   const notificationOptions = {
-    body: payload.data.body,
+    body: notificationBody,
     icon: "/icon-192.png",
-    image: payload.data.imageUrl,
+    // Only include the image property if a URL was provided
+    ...(notificationImage && { image: notificationImage }),
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
