@@ -152,16 +152,17 @@ export default function App() {
       await updateDoc(doc(db, "todos", id), { done: !current });
 
       if (!current) {
-        // trigger confetti when marking as done
-        confetti({
+        // safe runtime call to the confetti global (avoids TypeScript error)
+        const globalAny = window as any;
+        globalAny.confetti?.({
           particleCount: 80,
-          spread: 50,
+          spread: 55,
           origin: { y: 0.7 },
         });
       }
     } catch (err) {
-      console.error("Toggle done error:", err);
-      showToast("Failed to update.");
+      console.error("Toggle error:", err);
+      showToast("Failed to update");
     }
   }
 
