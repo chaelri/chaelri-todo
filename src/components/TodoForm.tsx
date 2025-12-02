@@ -42,6 +42,11 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.focus();
+  }, []);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
@@ -79,6 +84,7 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
   return (
     <form className="todo-form" onSubmit={handleSubmit}>
       <input
+        ref={inputRef}
         type="text"
         placeholder="Enter todo (optional)..."
         value={text}
@@ -86,7 +92,16 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
       />
 
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
+        <div className="file-input-wrapper">
+          <label htmlFor="todoFile">Choose File</label>
+          <span>{file?.name ?? "no file selected"}</span>
+          <input
+            id="todoFile"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </div>
 
         {preview && (
           <img

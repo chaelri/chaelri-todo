@@ -168,6 +168,20 @@ export default function App() {
     }
   }
 
+  //-------------------------------------
+  // AUTO REQUEST NOTIFICATIONS ONCE
+  //-------------------------------------
+  useEffect(() => {
+    if (!("Notification" in window)) return;
+    if (localStorage.getItem("askedNotifications")) return; // only once
+
+    localStorage.setItem("askedNotifications", "true");
+
+    if (Notification.permission === "default") {
+      enableNotifications();
+    }
+  }, []);
+
   //
   // ------------------------------
   // ENABLE FCM NOTIFICATIONS
@@ -289,9 +303,6 @@ export default function App() {
     <div className="app-container">
       <header>
         <h1>Chaelri ToDo</h1>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={enableNotifications}>Enable Notifications</button>
-        </div>
       </header>
 
       <main>

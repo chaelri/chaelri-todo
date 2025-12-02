@@ -4,9 +4,13 @@
 body {
   margin: 0;
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  background: linear-gradient(to bottom, #fff4fa 0%, #f8f5ff 50%, #f4faff 100%);
+  background: linear-gradient(180deg, #ffeef7, #f4f1ff, #eef7ff);
+  background-attachment: fixed;
+  background-size: cover;
+  min-height: 100vh;
   color: #1e293b;
 }
+
 
 /* App container */
 .app-container {
@@ -494,4 +498,39 @@ button, input {
 /* subtle pressing */
 .check-btn:active {
   transform: scale(0.92);
+}
+
+.modal-card {
+  max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.file-input-wrapper {
+  background: #fdebf5;
+  border-radius: 10px;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.file-input-wrapper label {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.file-input-wrapper span {
+  color: #63636b;
+  font-size: 14px;
+}
+
+.file-input-wrapper input {
+  display: none;
 }
