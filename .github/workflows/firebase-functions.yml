@@ -1,0 +1,38 @@
+name: Firebase Functions Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy-functions:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Install dependencies
+        working-directory: functions
+        run: npm install
+
+      - name: Build functions
+        working-directory: functions
+        run: npm run build
+
+      - name: Write Service Account JSON
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/serviceAccount.json
+
+      - name: Deploy Functions
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ HOME }}/serviceAccount.json
+        run: firebase deploy --only functions --project "${{ secrets.FIREBASE_PROJECT_ID }}"
