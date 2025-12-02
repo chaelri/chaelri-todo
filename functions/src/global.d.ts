@@ -1,1 +1,5 @@
-declare const confetti: any;
+declare global {
+  const confetti: any;
+}
+
+export {};
