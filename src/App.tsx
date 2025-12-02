@@ -76,30 +76,33 @@ export default function App() {
   //
   async function enableNotifications() {
     console.log("Requesting notifications...");
-
+  
     if (!messaging) {
-      console.warn("Messaging is not supported in this environment.");
-      alert("Messaging not supported.");
+      console.warn("Messaging not supported");
       return;
     }
-
+  
+    // Register our custom Firebase Messaging SW
+    const swReg = await navigator.serviceWorker.register(
+      "/chaelri-todo/firebase-messaging-sw.js",
+      { scope: "/chaelri-todo/" }
+    );
+  
+    console.log("SW registered:", swReg);
+  
     try {
-        const token = await getToken(messaging, {
-            vapidKey: import.meta.env.VITE_VAPID_KEY,
-            serviceWorkerRegistration: await navigator.serviceWorker.register(
-              "/chaelri-todo/firebase-messaging-sw.js",
-              { scope: "/chaelri-todo/" }
-            )
-          });
-          
-
+      const token = await getToken(messaging, {
+        vapidKey: import.meta.env.VITE_VAPID_KEY,
+        serviceWorkerRegistration: swReg,
+      });
+  
       console.log("FCM Token:", token);
       alert("Notifications enabled! Token printed in console.");
     } catch (err) {
       console.error("getToken ERROR:", err);
-      alert("Failed to activate notifications.");
     }
   }
+  
 
   //
   // ------------------------------
