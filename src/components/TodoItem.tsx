@@ -60,7 +60,10 @@ export default function TodoItem({
 
       <div style={{ marginTop: 8, display: "flex", gap: 8 }}>
         {onToggle && (
-          <button onClick={() => onToggle(id, !!done)} className="icon-btn">
+          <button
+            onClick={() => onToggle(id, !!done)}
+            className="icon-btn small"
+          >
             {done ? "✓" : "◻"}
           </button>
         )}
@@ -69,7 +72,7 @@ export default function TodoItem({
             onClick={() => {
               if (confirm("Delete this note?")) onDelete(id);
             }}
-            className="icon-btn danger"
+            className="icon-btn small danger"
           >
             🗑
           </button>

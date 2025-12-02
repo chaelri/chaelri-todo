@@ -1,190 +1,111 @@
-/* Base styling */
-body {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-  background: linear-gradient(to bottom, #ffeef7, #f4f1ff, #eef7ff);
-  color: #1e293b;
-}
-
-/* App container */
-.app-container {
-  max-width: 700px;
-  margin: auto;
-  padding: 20px;
-}
-
-/* Header */
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-header h1 {
-  font-weight: 800;
-  color: #a855f7;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-header button {
-  background: linear-gradient(to right, #fbcfe8, #d8b4fe);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 999px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
-}
-
-header button:hover {
-  transform: scale(1.05);
-}
-
-/* Form */
-.todo-form {
-  margin-top: 20px;
+/* Action column (compact right-side) */
+.action-col {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
 }
 
-.todo-form input[type="text"] {
-  padding: 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 15px;
+/* Small variant for icon buttons */
+.icon-btn.small {
+  padding: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.todo-form input[type="file"] {
-  background: #fdf2f8;
-  padding: 10px;
-  border-radius: 8px;
+/* subtle hover for small */
+.icon-btn.small:hover {
+  transform: translateY(-3px) scale(1.02);
 }
 
-.todo-form button {
+/* Add button animation */
+.add-btn {
   background: linear-gradient(to right, #f9a8d4, #c084fc);
   border: none;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
   font-weight: bold;
   color: white;
   cursor: pointer;
-  transition: 0.2s;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  box-shadow: 0 6px 18px rgba(192, 132, 252, 0.18);
+  animation: float 6s ease-in-out infinite;
 }
 
-.todo-form button:hover {
-  transform: scale(1.03);
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
-/* Todo list */
-.todo-list {
-  margin-top: 20px;
+.add-btn:active {
+  transform: scale(0.98);
 }
 
-/* Todo item card */
-.todo-item {
-  background: white;
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 14px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  transition: 0.25s;
+/* Toast styles */
+.toast-stack {
+  position: fixed;
+  right: 16px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2000;
 }
 
-.todo-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+.toast {
+  background: linear-gradient(90deg, #111827, #4b5563);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  min-width: 180px;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
+  opacity: 0.98;
+  transform-origin: bottom right;
+  animation: toast-in 220ms ease;
 }
 
-.todo-item p {
-  margin: 0;
-  font-size: 15px;
-  color: #374151;
+@keyframes toast-in {
+  from {
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
-/* Date */
-.todo-item small {
-  margin-top: 8px;
-  display: block;
-  color: #6b7280;
+.toast-body {
+  font-size: 14px;
 }
 
-/* Images */
-.todo-item img {
-  width: 100%;
-  max-width: 220px;
-  border-radius: 12px !important;
-  margin-top: 8px;
-  object-fit: cover;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-  transition: 0.25s;
-}
-
-.todo-item img:hover {
-  transform: scale(1.01);
-}
-
-/* keep previous rules, append these */
-
-.icon-btn {
-  background: #fff;
-  border: 1px solid #eef2ff;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 700;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: 0.15s;
-}
-
-.icon-btn:hover {
-  transform: translateY(-2px);
-}
-
-.icon-btn.danger {
+/* ensure icon-btn danger remains readable with small */
+.icon-btn.small.danger {
   background: linear-gradient(90deg, #fee2e2, #fecaca);
   border-color: #fecaca;
   color: #991b1b;
 }
 
-/* Spinner */
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* reduce image card width a bit for mobile */
+@media (max-width: 520px) {
+  .todo-item img {
+    max-width: 100%;
   }
-}
-
-/* Image modal */
-.image-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(2, 6, 23, 0.6);
-  z-index: 1000;
-  padding: 20px;
-}
-
-.image-modal img {
-  max-width: 95%;
-  max-height: 95%;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.5);
+  .action-col {
+    min-width: 44px;
+  }
 }

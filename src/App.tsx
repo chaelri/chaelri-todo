@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
+import Toast from "./components/Toast";
 
 import { db, storage, messaging } from "./firebase";
 import {
@@ -27,10 +28,25 @@ interface TodoItem {
   done?: boolean;
 }
 
+interface ToastObj {
+  id: string;
+  message: string;
+  timeout?: number;
+}
+
 export default function App() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<ToastObj[]>([]);
+
+  function showToast(message: string, timeout = 4000) {
+    const id = String(Math.random()).slice(2);
+    setToasts((s) => [...s, { id, message, timeout }]);
+  }
+  function removeToast(id: string) {
+    setToasts((s) => s.filter((t) => t.id !== id));
+  }
 
   //
   // ------------------------------
@@ -65,11 +81,11 @@ export default function App() {
   //
   async function addTodo(text: string | null, file?: File | null) {
     if (!text && !file) {
-      alert("Please add text or an image.");
+      showToast("Please add text or an image.");
       return;
     }
 
-    let imageUrl = null;
+    let imageUrl: string | null = null;
 
     try {
       setUploading(true);
@@ -81,14 +97,16 @@ export default function App() {
       }
 
       await addDoc(collection(db, "todos"), {
-        text: text || null,
+        text: text ?? "",
         imageUrl: imageUrl,
         createdAt: Timestamp.now(),
         done: false,
       });
+
+      showToast("Todo added");
     } catch (err) {
       console.error("Add todo error:", err);
-      alert("Failed to add todo.");
+      showToast("Failed to add todo.");
     } finally {
       setUploading(false);
     }
@@ -102,9 +120,25 @@ export default function App() {
   async function deleteTodo(id: string) {
     try {
       await deleteDoc(doc(db, "todos", id));
+      showToast("Deleted");
     } catch (err) {
       console.error("Delete error:", err);
-      alert("Failed to delete.");
+      showToast("Failed to delete.");
+    }
+  }
+
+  //
+  // ------------------------------
+  // EDIT TODO (click -> edit)
+  // ------------------------------
+  //
+  async function editTodo(id: string, newText: string) {
+    try {
+      await updateDoc(doc(db, "todos", id), { text: newText });
+      showToast("Updated");
+    } catch (err) {
+      console.error("Edit error:", err);
+      showToast("Failed to update.");
     }
   }
 
@@ -118,7 +152,7 @@ export default function App() {
       await updateDoc(doc(db, "todos", id), { done: !current });
     } catch (err) {
       console.error("Toggle done error:", err);
-      alert("Failed to update.");
+      showToast("Failed to update.");
     }
   }
 
@@ -132,6 +166,7 @@ export default function App() {
 
     if (!messaging) {
       console.warn("Messaging not supported");
+      showToast("Messaging not supported in this browser");
       return;
     }
 
@@ -155,9 +190,10 @@ export default function App() {
         await saveTokenToFirestore(token);
       }
 
-      alert("Notifications enabled!");
+      showToast("Notifications enabled!");
     } catch (err) {
       console.error("getToken ERROR:", err);
+      showToast("Failed to enable notifications");
     }
   }
 
@@ -179,7 +215,7 @@ export default function App() {
 
   //
   // ------------------------------
-  // FOREGROUND MESSAGES
+  // FOREGROUND MESSAGES (toast)
   // ------------------------------
   //
   useEffect(() => {
@@ -191,7 +227,7 @@ export default function App() {
       const title = payload.data?.title || "New Todo";
       const body = payload.data?.body || "";
 
-      alert(`New Notification: ${title}\n${body}`);
+      showToast(`${title} — ${body}`);
     });
 
     return () => unsub();
@@ -240,6 +276,7 @@ export default function App() {
           todos={todos}
           onDelete={deleteTodo}
           onToggleDone={toggleDone}
+          onEdit={editTodo}
           onImageClick={(url) => setImageModalUrl(url)}
         />
       </main>
@@ -254,6 +291,13 @@ export default function App() {
           <img src={imageModalUrl} alt="full" />
         </div>
       )}
+
+      {/* Toast stack */}
+      <div className="toast-stack" aria-live="polite">
+        {toasts.map((t) => (
+          <Toast key={t.id} toast={t} onClose={removeToast} />
+        ))}
+      </div>
     </div>
   );
 }

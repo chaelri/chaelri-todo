@@ -11,6 +11,7 @@ interface Props {
   onDelete: (id: string) => void;
   onToggleDone: (id: string, current: boolean) => void;
   onImageClick: (url: string) => void;
+  onEdit?: (id: string, newText: string) => void;
 }
 
 export default function TodoList({
@@ -18,6 +19,7 @@ export default function TodoList({
   onDelete,
   onToggleDone,
   onImageClick,
+  onEdit,
 }: Props) {
   if (todos.length === 0) return <p>No todos yet</p>;
 
@@ -36,6 +38,15 @@ export default function TodoList({
                     marginBottom: 6,
                     textDecoration: t.done ? "line-through" : "none",
                     opacity: t.done ? 0.6 : 1,
+                    cursor: onEdit ? "pointer" : "default",
+                  }}
+                  onClick={() => {
+                    if (!onEdit) return;
+                    const current = t.text ?? "";
+                    const newText = prompt("Edit todo text:", current);
+                    if (newText !== null && newText.trim() !== current) {
+                      onEdit(t.id, newText.trim());
+                    }
                   }}
                 >
                   {t.text}
@@ -78,11 +89,12 @@ export default function TodoList({
               </small>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="action-col">
               <button
                 onClick={() => onToggleDone(t.id, !!t.done)}
                 title={t.done ? "Mark as not done" : "Mark as done"}
-                className="icon-btn"
+                className="icon-btn small"
+                aria-label="toggle done"
               >
                 {t.done ? "✓" : "◻"}
               </button>
@@ -92,7 +104,8 @@ export default function TodoList({
                   if (confirm("Delete this note?")) onDelete(t.id);
                 }}
                 title="Delete"
-                className="icon-btn danger"
+                className="icon-btn small danger"
+                aria-label="delete"
               >
                 🗑
               </button>

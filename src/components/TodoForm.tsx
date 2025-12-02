@@ -5,21 +5,58 @@ interface Props {
   uploading?: boolean;
 }
 
+async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
+  return new Promise<File>((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const ratio = img.width / img.height;
+      const width = Math.min(img.width, maxWidth);
+      const height = Math.round(width / ratio);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            resolve(file);
+            return;
+          }
+          const newFile = new File([blob], file.name, { type: file.type });
+          resolve(newFile);
+        },
+        file.type,
+        0.8
+      ); // quality 0.8
+    };
+    img.onerror = () => resolve(file);
+    img.src = url;
+  });
+}
+
 export default function TodoForm({ onAdd, uploading = false }: Props) {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
-    setFile(f);
-
-    if (f) {
-      const url = URL.createObjectURL(f);
-      setPreview(url);
-    } else {
+    if (!f) {
+      setFile(null);
       setPreview(null);
+      return;
     }
+
+    // resize before setting
+    const resized = await resizeImageFile(f, 1024);
+    setFile(resized);
+
+    const url = URL.createObjectURL(resized);
+    setPreview(url);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -67,7 +104,12 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
       </div>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <button type="submit" disabled={uploading}>
+        <button
+          type="submit"
+          disabled={uploading}
+          className="add-btn"
+          aria-disabled={uploading}
+        >
           {uploading ? <span className="spinner" aria-hidden /> : "Add"}
         </button>
       </div>
