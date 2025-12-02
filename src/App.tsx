@@ -112,7 +112,7 @@ export default function App() {
             };
 
             // Save token document
-            await setDoc(doc(db, "tokens", token), tokenData);
+            await saveTokenToFirestore(token);
 
             console.log("Token saved to Firestore:", tokenData);
 
@@ -121,6 +121,23 @@ export default function App() {
             console.error("getToken ERROR:", err);
         }
     }
+
+    async function saveTokenToFirestore(token: string) {
+        const tokenData = {
+            token,
+            createdAt: Timestamp.now(),
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            isMobile: /Android|iPhone|iPad|iPod/i.test(navigator.userAgent),
+            uid: null // for auth later
+        };
+
+        await setDoc(doc(db, "tokens", token), tokenData, { merge: true });
+        console.log("Token synced:", tokenData);
+    }
+
 
 
     //
@@ -139,6 +156,27 @@ export default function App() {
         return () => {
             unsub();
         };
+    }, []);
+
+    useEffect(() => {
+        async function syncToken() {
+            if (!messaging) return;
+
+            try {
+                const token = await getToken(messaging, {
+                    vapidKey: import.meta.env.VITE_VAPID_KEY,
+                });
+
+                if (token) {
+                    await saveTokenToFirestore(token);
+                }
+
+            } catch (err) {
+                console.log("Token sync skipped:", err);
+            }
+        }
+
+        syncToken();
     }, []);
 
     //
