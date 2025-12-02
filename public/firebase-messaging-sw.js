@@ -16,14 +16,13 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-    // self.registration.showNotification(
-    //     payload.notification?.title || "Chaelri ToDo",
-    //     {
-    //         body: payload.notification?.body || "",
-    //         icon: "/icon-192.png"
-    //     }
-    // );
-    self.registration.hideNotification();
+    self.registration.showNotification(
+        payload.notification?.title || "Chaelri ToDo",
+        {
+            body: payload.notification?.body || "",
+            icon: "/icon-192.png"
+        }
+    );
 });
 
 
