@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./styles.css";
 
-// Ensure this matches your GitHub Pages repo folder:
 const BASE_PATH = "/chaelri-todo/";
 
 if ("serviceWorker" in navigator) {
