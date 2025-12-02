@@ -12,6 +12,8 @@ import {
   Timestamp,
   setDoc,
   doc,
+  deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -22,10 +24,13 @@ interface TodoItem {
   text: string | null;
   imageUrl?: string | null;
   createdAt: Timestamp;
+  done?: boolean;
 }
 
 export default function App() {
   const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
 
   //
   // ------------------------------
@@ -43,6 +48,7 @@ export default function App() {
           text: data.text ?? null,
           imageUrl: data.imageUrl ?? null,
           createdAt: data.createdAt,
+          done: data.done ?? false,
         } as TodoItem;
       });
 
@@ -66,6 +72,8 @@ export default function App() {
     let imageUrl = null;
 
     try {
+      setUploading(true);
+
       if (file) {
         const imageRef = ref(storage, `todos/${Date.now()}-${file.name}`);
         await uploadBytes(imageRef, file);
@@ -76,10 +84,41 @@ export default function App() {
         text: text || null,
         imageUrl: imageUrl,
         createdAt: Timestamp.now(),
+        done: false,
       });
     } catch (err) {
       console.error("Add todo error:", err);
       alert("Failed to add todo.");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  //
+  // ------------------------------
+  // DELETE TODO
+  // ------------------------------
+  //
+  async function deleteTodo(id: string) {
+    try {
+      await deleteDoc(doc(db, "todos", id));
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete.");
+    }
+  }
+
+  //
+  // ------------------------------
+  // TOGGLE DONE
+  // ------------------------------
+  //
+  async function toggleDone(id: string, current: boolean) {
+    try {
+      await updateDoc(doc(db, "todos", id), { done: !current });
+    } catch (err) {
+      console.error("Toggle done error:", err);
+      alert("Failed to update.");
     }
   }
 
@@ -186,17 +225,31 @@ export default function App() {
     <div className="app-container">
       <header>
         <h1>Chaelri ToDo</h1>
-        <button onClick={enableNotifications}>Enable Notifications</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={enableNotifications}>Enable Notifications</button>
+        </div>
       </header>
 
       <main>
-        <TodoForm onAdd={addTodo} />
-        <TodoList todos={todos} />
+        <TodoForm onAdd={addTodo} uploading={uploading} />
+        <TodoList
+          todos={todos}
+          onDelete={deleteTodo}
+          onToggleDone={toggleDone}
+          onImageClick={(url) => setImageModalUrl(url)}
+        />
       </main>
 
       <footer>
         <small>Built with React + Firebase + PWA</small>
       </footer>
+
+      {/* Image modal (simple) */}
+      {imageModalUrl && (
+        <div className="image-modal" onClick={() => setImageModalUrl(null)}>
+          <img src={imageModalUrl} alt="full" />
+        </div>
+      )}
     </div>
   );
 }
