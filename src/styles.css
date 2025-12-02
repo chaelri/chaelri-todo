@@ -1,31 +1,79 @@
-/* Action column (compact right-side) */
-.action-col {
+/* -------------------------------------------------
+   GLOBAL
+--------------------------------------------------*/
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(to bottom, #ffeef7, #f4f1ff, #eef7ff);
+  color: #1e293b;
+}
+
+/* App container */
+.app-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* -------------------------------------------------
+   HEADER
+--------------------------------------------------*/
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+header h1 {
+  font-weight: 800;
+  color: #a855f7;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+header button {
+  background: linear-gradient(to right, #fbcfe8, #d8b4fe);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+header button:hover {
+  transform: scale(1.05);
+}
+
+/* -------------------------------------------------
+   FORM
+--------------------------------------------------*/
+.todo-form {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  min-width: 56px;
+  gap: 10px;
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
 }
 
-/* Small variant for icon buttons */
-.icon-btn.small {
-  padding: 6px;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  font-size: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.todo-form input[type="text"] {
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 15px;
 }
 
-/* subtle hover for small */
-.icon-btn.small:hover {
-  transform: translateY(-3px) scale(1.02);
+.todo-form input[type="file"] {
+  background: #fdf2f8;
+  padding: 10px;
+  border-radius: 8px;
 }
 
-/* Add button animation */
+/* Animated Add Button */
 .add-btn {
   background: linear-gradient(to right, #f9a8d4, #c084fc);
   border: none;
@@ -51,11 +99,157 @@
   }
 }
 
-.add-btn:active {
-  transform: scale(0.98);
+.add-btn:hover {
+  transform: scale(1.03);
 }
 
-/* Toast styles */
+.add-btn:active {
+  transform: scale(0.97);
+}
+
+/* -------------------------------------------------
+   TODO LIST
+--------------------------------------------------*/
+.todo-list {
+  margin-top: 20px;
+}
+
+/* Todo card */
+.todo-item {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  transition: 0.25s;
+}
+
+.todo-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+}
+
+.todo-item p {
+  margin: 0;
+  font-size: 15px;
+  color: #374151;
+}
+
+.todo-item small {
+  margin-top: 8px;
+  display: block;
+  color: #6b7280;
+}
+
+/* -------------------------------------------------
+   TODO IMAGES
+--------------------------------------------------*/
+.todo-item img {
+  width: 100%;
+  max-width: 220px;
+  border-radius: 12px !important;
+  margin-top: 8px;
+  object-fit: cover;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: 0.25s;
+  cursor: pointer;
+}
+
+.todo-item img:hover {
+  transform: scale(1.01);
+}
+
+/* -------------------------------------------------
+   ACTION BUTTONS
+--------------------------------------------------*/
+.action-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+}
+
+.icon-btn {
+  background: #fff;
+  border: 1px solid #eef2ff;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: 0.15s;
+}
+
+.icon-btn.small {
+  width: 40px;
+  height: 40px;
+  padding: 6px;
+  border-radius: 10px;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px);
+}
+
+.icon-btn.small:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+.icon-btn.danger {
+  background: linear-gradient(90deg, #fee2e2, #fecaca);
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+/* -------------------------------------------------
+   SPINNER
+--------------------------------------------------*/
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -------------------------------------------------
+   IMAGE MODAL
+--------------------------------------------------*/
+.image-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 6, 23, 0.6);
+  z-index: 1000;
+  padding: 20px;
+}
+
+.image-modal img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.5);
+}
+
+/* -------------------------------------------------
+   TOASTS
+--------------------------------------------------*/
 .toast-stack {
   position: fixed;
   right: 16px;
@@ -93,18 +287,14 @@
   font-size: 14px;
 }
 
-/* ensure icon-btn danger remains readable with small */
-.icon-btn.small.danger {
-  background: linear-gradient(90deg, #fee2e2, #fecaca);
-  border-color: #fecaca;
-  color: #991b1b;
-}
-
-/* reduce image card width a bit for mobile */
+/* -------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------*/
 @media (max-width: 520px) {
   .todo-item img {
     max-width: 100%;
   }
+
   .action-col {
     min-width: 44px;
   }
