@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 import Toast from "./components/Toast";
@@ -39,6 +39,7 @@ export default function App() {
   const [uploading, setUploading] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastObj[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   function showToast(message: string, timeout = 4000) {
     const id = String(Math.random()).slice(2);
@@ -104,6 +105,8 @@ export default function App() {
       });
 
       showToast("Todo added");
+      // close modal (if open)
+      setShowAddModal(false);
     } catch (err) {
       console.error("Add todo error:", err);
       showToast("Failed to add todo.");
@@ -152,7 +155,6 @@ export default function App() {
       await updateDoc(doc(db, "todos", id), { done: !current });
 
       if (!current) {
-        // safe runtime call to the confetti global (avoids TypeScript error)
         const globalAny = window as any;
         globalAny.confetti?.({
           particleCount: 80,
@@ -268,6 +270,18 @@ export default function App() {
 
   //
   // ------------------------------
+  // Modal keyboard close (Esc)
+  // ------------------------------
+  useEffect(() => {
+    function handler(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowAddModal(false);
+    }
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  //
+  // ------------------------------
   // UI
   // ------------------------------
   //
@@ -281,7 +295,12 @@ export default function App() {
       </header>
 
       <main>
-        <TodoForm onAdd={addTodo} uploading={uploading} />
+        {/* Keep your existing inline form for fallback but hide visually on larger screens.
+            We keep rendering it here to avoid removing functionality; primary add now via modal. */}
+        <div style={{ display: "none" }}>
+          <TodoForm onAdd={addTodo} uploading={uploading} />
+        </div>
+
         <TodoList
           todos={todos}
           onDelete={deleteTodo}
@@ -290,6 +309,95 @@ export default function App() {
           onImageClick={(url) => setImageModalUrl(url)}
         />
       </main>
+
+      {/* Floating centered Add button (FAB) */}
+      <button
+        onClick={() => setShowAddModal(true)}
+        aria-label="Add todo"
+        style={{
+          position: "fixed",
+          left: "50%",
+          transform: "translateX(-50%)",
+          bottom: 28,
+          zIndex: 1200,
+          width: 72,
+          height: 72,
+          borderRadius: 36,
+          border: "none",
+          background:
+            "linear-gradient(135deg, rgba(200,140,255,1), rgba(240,120,200,1))",
+          color: "white",
+          fontSize: 20,
+          boxShadow: "0 12px 30px rgba(96,43,182,0.18)",
+          cursor: "pointer",
+        }}
+      >
+        ＋
+      </button>
+
+      {/* Centered Add Modal */}
+      {showAddModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1400,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(4,6,14,0.35)",
+            backdropFilter: "blur(6px)",
+            padding: 20,
+          }}
+          onClick={(e) => {
+            // close when clicking outside the modal card
+            if (e.target === e.currentTarget) setShowAddModal(false);
+          }}
+        >
+          <div
+            style={{
+              width: "min(720px, 96vw)",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 20,
+              padding: 18,
+              boxShadow: "0 20px 50px rgba(2,6,23,0.36)",
+              transform: "translateY(0)",
+              transition: "transform 220ms cubic-bezier(.2,.9,.2,1)",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <h2 style={{ margin: 0 }}>Add Todo</h2>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    fontSize: 18,
+                    cursor: "pointer",
+                  }}
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 12 }}>
+              <TodoForm onAdd={addTodo} uploading={uploading} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Image modal (simple) */}
       {imageModalUrl && (
