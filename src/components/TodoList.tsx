@@ -66,6 +66,15 @@ export default function TodoList({
     setActiveTilt({ id: null, rx: 0, ry: 0 });
   }
 
+  function handleDeleteWithAnimation(id: string) {
+    const el = document.getElementById(`todo-${id}`);
+    if (!el) return onDelete(id);
+
+    el.classList.add("delete-anim");
+
+    setTimeout(() => onDelete(id), 300); // match CSS duration
+  }
+
   if (todos.length === 0) return <p>No todos yet</p>;
 
   return (
@@ -79,12 +88,13 @@ export default function TodoList({
         return (
           <div
             key={t.id}
+            id={`todo-${t.id}`}
             className="todo-item"
             onTouchStart={handleTouchStart}
             onTouchEnd={(e) =>
               handleTouchEnd(
                 e,
-                () => onDelete(t.id),
+                () => handleDeleteWithAnimation(t.id),
                 () => onToggleDone(t.id, !!t.done)
               )
             }
@@ -160,7 +170,7 @@ export default function TodoList({
                 ></button>
 
                 <button
-                  onClick={() => onDelete(t.id)}
+                  onClick={() => handleDeleteWithAnimation(t.id)}
                   className="icon-btn small danger"
                 >
                   🗑

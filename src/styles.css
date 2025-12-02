@@ -546,3 +546,25 @@ input {
   opacity: 0;
   cursor: pointer;
 }
+
+/* DELETE ANIMATION */
+.delete-anim {
+  animation: todo-delete 0.28s ease forwards;
+}
+
+@keyframes todo-delete {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  40% {
+    opacity: 0.6;
+    transform: translateX(-10px) scale(0.97);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-25px) scale(0.85);
+    filter: blur(2px);
+  }
+}
