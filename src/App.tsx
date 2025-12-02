@@ -168,19 +168,17 @@ export default function App() {
     }
   }
 
-  //-------------------------------------
-  // AUTO REQUEST NOTIFICATIONS ONCE
-  //-------------------------------------
-  useEffect(() => {
+  async function requestNotificationsIfNeeded() {
     if (!("Notification" in window)) return;
-    if (localStorage.getItem("askedNotifications")) return; // only once
 
-    localStorage.setItem("askedNotifications", "true");
+    const alreadyAsked = localStorage.getItem("askedNotifications");
+    if (alreadyAsked) return;
 
     if (Notification.permission === "default") {
-      enableNotifications();
+      localStorage.setItem("askedNotifications", "true");
+      await enableNotifications();
     }
-  }, []);
+  }
 
   //
   // ------------------------------

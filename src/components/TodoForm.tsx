@@ -67,6 +67,8 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    requestNotificationsIfNeeded();
+
     // ALLOW: text only, image only, or both
     if (!text.trim() && !file) {
       alert("Please enter text or choose an image.");
