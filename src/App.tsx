@@ -182,17 +182,12 @@ export default function App() {
   // FOREGROUND MESSAGES
   // ------------------------------
   //
-  //
-  // FOREGROUND MESSAGES (fixed — no duplicates)
-  //
   useEffect(() => {
     if (!messaging) return;
 
     const unsub = onMessage(messaging, (payload) => {
       console.log("Foreground notification:", payload);
-
-      // Only foreground alert (NO browser notification)
-      alert(`New Notification: ${payload.notification?.title || "New update"}`);
+      alert(`New Notification: ${payload.notification?.title}`);
     });
 
     return () => unsub();
