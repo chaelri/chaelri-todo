@@ -307,7 +307,11 @@ export default function App() {
         {/* Keep your existing inline form for fallback but hide visually on larger screens.
             We keep rendering it here to avoid removing functionality; primary add now via modal. */}
         <div style={{ display: "none" }}>
-          <TodoForm onAdd={addTodo} uploading={uploading} />
+          <TodoForm
+            onAdd={addTodo}
+            uploading={uploading}
+            onBeforeAdd={requestNotificationsIfNeeded}
+          />
         </div>
 
         <TodoList

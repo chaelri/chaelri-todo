@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 interface Props {
   onAdd: (text: string | null, file?: File | null) => void;
   uploading?: boolean;
+  onBeforeAdd?: () => void;
 }
 
 async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
@@ -67,9 +68,8 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    requestNotificationsIfNeeded();
+    if (onBeforeAdd) onBeforeAdd(); // LEGAL user gesture
 
-    // ALLOW: text only, image only, or both
     if (!text.trim() && !file) {
       alert("Please enter text or choose an image.");
       return;
@@ -77,7 +77,6 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
 
     onAdd(text.trim() || null, file);
 
-    // Reset fields
     setText("");
     setFile(null);
     setPreview(null);
