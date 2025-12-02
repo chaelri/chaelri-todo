@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+  }
+  
+  .app-container {
+    max-width: 700px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .todo-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .todo-list {
+    margin-top: 20px;
+  }
+  
