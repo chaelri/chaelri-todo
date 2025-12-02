@@ -187,7 +187,11 @@ export default function App() {
 
     const unsub = onMessage(messaging, (payload) => {
       console.log("Foreground notification:", payload);
-      alert(`New Notification: ${payload.notification?.title}`);
+
+      const title = payload.data?.title || "New Todo";
+      const body = payload.data?.body || "";
+
+      alert(`New Notification: ${title}\n${body}`);
     });
 
     return () => unsub();
