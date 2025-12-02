@@ -33,10 +33,10 @@ export default function App() {
   useEffect(() => {
     const q = query(collection(db, "todos"), orderBy("createdAt", "desc"));
     const unsub = onSnapshot(q, (snap) => {
-      const list = snap.docs.map((doc) => ({
-        id: doc.id,
-        ...(doc.data() as TodoItem),
-      }));
+        const list = snap.docs.map((doc) => {
+            const { id: _ignored, ...rest } = doc.data() as any;
+            return { id: doc.id, ...rest };
+          });
       setTodos(list);
     });
 
