@@ -150,6 +150,15 @@ export default function App() {
   async function toggleDone(id: string, current: boolean) {
     try {
       await updateDoc(doc(db, "todos", id), { done: !current });
+
+      if (!current) {
+        // trigger confetti when marking as done
+        confetti({
+          particleCount: 80,
+          spread: 50,
+          origin: { y: 0.7 },
+        });
+      }
     } catch (err) {
       console.error("Toggle done error:", err);
       showToast("Failed to update.");

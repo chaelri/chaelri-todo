@@ -116,17 +116,22 @@ header button:hover {
 
 /* Todo card */
 .todo-item {
-  background: white;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 18px;
   margin-bottom: 14px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-  transition: 0.25s;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: 0.25s ease;
 }
 
 .todo-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.09);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
 }
 
 .todo-item p {
@@ -298,4 +303,14 @@ header button:hover {
   .action-col {
     min-width: 44px;
   }
+}
+
+.inline-editor {
+  width: 100%;
+  font-size: 15px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #d4d4d8;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(6px);
 }
