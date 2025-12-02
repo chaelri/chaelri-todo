@@ -291,10 +291,6 @@ export default function App() {
         />
       </main>
 
-      <footer>
-        <small>Built with React + Firebase + PWA</small>
-      </footer>
-
       {/* Image modal (simple) */}
       {imageModalUrl && (
         <div className="image-modal" onClick={() => setImageModalUrl(null)}>
