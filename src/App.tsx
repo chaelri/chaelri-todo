@@ -1,124 +1,139 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
-import { messaging } from "./firebase";
-import { getToken, onMessage } from "firebase/messaging";
 
-
-import { db, storage } from "./firebase";
+import { db, storage, messaging } from "./firebase";
 import {
-    collection,
-    addDoc,
-    onSnapshot,
-    orderBy,
-    query,
-    Timestamp,
+  collection,
+  addDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  Timestamp,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+import { getToken, onMessage } from "firebase/messaging";
+
 interface TodoItem {
-    id: string;
-    text: string;
-    imageUrl?: string;
-    createdAt: any;
+  id: string;
+  text: string;
+  imageUrl?: string;
+  createdAt: Timestamp;
 }
 
 export default function App() {
-    const [todos, setTodos] = useState<TodoItem[]>([]);
+  const [todos, setTodos] = useState<TodoItem[]>([]);
 
-    useEffect(() => {
-        const unsub = onMessage(messaging, (payload) => {
-            console.log("Foreground notification:", payload);
-            alert(`New Notification: ${payload.notification?.title}`);
-        });
+  //
+  // ------------------------------
+  // REALTIME FIRESTORE LISTENER
+  // ------------------------------
+  //
+  useEffect(() => {
+    const q = query(collection(db, "todos"), orderBy("createdAt", "desc"));
+    const unsub = onSnapshot(q, (snap) => {
+      const list = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...(doc.data() as TodoItem),
+      }));
+      setTodos(list);
+    });
 
-        return () => {
-            unsub();
-        };
-    }, []);
+    return () => unsub();
+  }, []);
 
+  //
+  // ------------------------------
+  // ADD TODO + UPLOAD IMAGE
+  // ------------------------------
+  //
+  async function addTodo(text: string, file?: File | null) {
+    let imageUrl = "";
 
-    async function addTodo(text: string, file?: File | null) {
-        console.log("[addTodo] called", { text, file });
+    try {
+      if (file) {
+        const imageRef = ref(storage, `todos/${Date.now()}-${file.name}`);
+        await uploadBytes(imageRef, file);
+        imageUrl = await getDownloadURL(imageRef);
+      }
 
-        let imageUrl = "";
+      await addDoc(collection(db, "todos"), {
+        text,
+        imageUrl,
+        createdAt: Timestamp.now(),
+      });
+    } catch (err) {
+      console.error("Add todo error:", err);
+      alert("Failed to add todo.");
+    }
+  }
 
-        try {
-            if (file) {
-                console.log("[upload] creating ref...");
-                const imageRef = ref(storage, `todos/${Date.now()}-${file.name}`);
-                console.log("[upload] ref path:", imageRef.fullPath || "(no fullPath)");
+  //
+  // ------------------------------
+  // ENABLE FCM NOTIFICATIONS
+  // ------------------------------
+  //
+  async function enableNotifications() {
+    console.log("Requesting notifications...");
 
-                // upload with basic progress tracking using uploadBytes (no resumable progress API in this snippet)
-                const uploadResult = await uploadBytes(imageRef, file).catch((err) => {
-                    console.error("[uploadBytes] failed", err);
-                    throw err;
-                });
-
-                console.log("[uploadBytes] result:", uploadResult);
-
-                // getDownloadURL
-                try {
-                    imageUrl = await getDownloadURL(imageRef);
-                    console.log("[getDownloadURL] success:", imageUrl);
-                } catch (err) {
-                    console.error("[getDownloadURL] failed", err);
-                    // If this fails, we still continue to write the doc but with empty imageUrl
-                }
-            }
-
-            const docRef = await addDoc(collection(db, "todos"), {
-                text,
-                imageUrl,
-                createdAt: Timestamp.now(),
-            });
-
-            console.log("[addDoc] done, id:", docRef.id);
-        } catch (err) {
-            console.error("[addTodo] overall error:", err);
-            alert("Failed to add todo — check console for details.");
-        }
+    if (!messaging) {
+      console.warn("Messaging is not supported in this environment.");
+      alert("Messaging not supported.");
+      return;
     }
 
-    console.log("VAPID KEY:", import.meta.env.VITE_VAPID_KEY);
+    try {
+      const token = await getToken(messaging, {
+        vapidKey: import.meta.env.VITE_VAPID_KEY,
+      });
 
+      console.log("FCM Token:", token);
+      alert("Notifications enabled! Token printed in console.");
+    } catch (err) {
+      console.error("getToken ERROR:", err);
+      alert("Failed to activate notifications.");
+    }
+  }
 
-    async function enableNotifications() {
-        console.log("Requesting notifications...");
-      
-        if (!messaging) {
-          console.log("Messaging not initialized.");
-          alert("Messaging not supported.");
-          return;
-        }
-      
-        try {
-          const token = await getToken(messaging, {
-            vapidKey: import.meta.env.VITE_VAPID_KEY,
-          });
-          console.log("TOKEN RESULT:", token);
-          alert("Notifications enabled! Check console.");
-        } catch (err) {
-          console.error("getToken ERROR:", err);
-          alert("Failed to activate notifications. Check console.");
-        }
-      }
-      
+  //
+  // ------------------------------
+  // FOREGROUND MESSAGES
+  // ------------------------------
+  //
+  useEffect(() => {
+    if (!messaging) return;
 
+    const unsub = onMessage(messaging, (payload) => {
+      console.log("Foreground notification:", payload);
+      alert(`New Notification: ${payload.notification?.title}`);
+    });
 
+    return () => {
+      unsub();
+    };
+  }, []);
 
-    return (
-        <div className="app-container">
-            <header>
-                <h1>Chaelri ToDo</h1>
-                <button onClick={enableNotifications}>Enable Notifications</button>
-            </header>
+  //
+  // ------------------------------
+  // UI
+  // ------------------------------
+  //
+  return (
+    <div className="app-container">
+      <header>
+        <h1>Chaelri ToDo</h1>
+        <button onClick={enableNotifications}>Enable Notifications</button>
+      </header>
 
+      <main>
+        <TodoForm onAdd={addTodo} />
+        <TodoList todos={todos} />
+      </main>
 
-            <main>
-                <TodoForm onAdd={addTodo} />
-                <TodoList todos={todos} />
-            </main>
-        </div>
-    );
+      <footer>
+        <small>Built with React + Firebase + PWA</small>
+      </footer>
+    </div>
+  );
 }
