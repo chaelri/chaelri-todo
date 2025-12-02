@@ -14,6 +14,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 import { getToken, onMessage } from "firebase/messaging";
+import { setDoc, doc } from "firebase/firestore";
 
 interface TodoItem {
   id: string;
@@ -95,6 +96,12 @@ export default function App() {
         vapidKey: import.meta.env.VITE_VAPID_KEY,
         serviceWorkerRegistration: swReg,
       });
+
+      await setDoc(doc(db, "tokens", token), {
+        token,
+        createdAt: Timestamp.now(),
+      });
+      console.log("Token saved to Firestore");
   
       console.log("FCM Token:", token);
       alert("Notifications enabled! Token printed in console.");
