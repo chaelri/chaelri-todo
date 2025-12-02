@@ -3,13 +3,15 @@ import React, { useState, useEffect, useRef } from "react";
 interface Props {
   onAdd: (text: string | null, file?: File | null) => void;
   uploading?: boolean;
-  onBeforeAdd?: () => void; // <-- ADD THIS
+  onBeforeAdd?: () => void; // <-- trigger notification check
 }
 
+// Resize image to avoid massive uploads
 async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
   return new Promise<File>((resolve) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
+
     img.onload = () => {
       const ratio = img.width / img.height;
       const width = Math.min(img.width, maxWidth);
@@ -18,22 +20,20 @@ async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
       const canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
+
       const ctx = canvas.getContext("2d")!;
       ctx.drawImage(img, 0, 0, width, height);
 
       canvas.toBlob(
         (blob) => {
-          if (!blob) {
-            resolve(file);
-            return;
-          }
-          const newFile = new File([blob], file.name, { type: file.type });
-          resolve(newFile);
+          if (!blob) return resolve(file);
+          resolve(new File([blob], file.name, { type: file.type }));
         },
         file.type,
         0.8
       );
     };
+
     img.onerror = () => resolve(file);
     img.src = url;
   });
@@ -47,14 +47,18 @@ export default function TodoForm({
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-focus when opening
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
+  // FILE PICKER WORKS ON ALL DEVICES
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
+
     if (!f) {
       setFile(null);
       setPreview(null);
@@ -63,14 +67,13 @@ export default function TodoForm({
 
     const resized = await resizeImageFile(f, 1024);
     setFile(resized);
-
     setPreview(URL.createObjectURL(resized));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (onBeforeAdd) onBeforeAdd(); // <-- FIX: safely call it
+    if (onBeforeAdd) onBeforeAdd(); // LEGAL auto-notif request
 
     if (!text.trim() && !file) {
       alert("Please enter text or choose an image.");
@@ -79,9 +82,13 @@ export default function TodoForm({
 
     onAdd(text.trim() || null, file);
 
+    // Reset state
     setText("");
     setFile(null);
     setPreview(null);
+
+    // Re-focus input
+    inputRef.current?.focus();
   }
 
   return (
@@ -94,15 +101,21 @@ export default function TodoForm({
         onChange={(e) => setText(e.target.value)}
       />
 
+      {/* FILE UPLOAD WRAPPER — FIXED FOR IOS */}
       <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <div className="file-input-wrapper">
-          <label htmlFor="todoFile">Choose File</label>
-          <span>{file?.name ?? "no file selected"}</span>
+        <div style={{ position: "relative", width: "100%" }}>
+          <div className="file-input-wrapper">
+            <label htmlFor="todoFile">Choose File</label>
+            <span>{file?.name ?? "no file selected"}</span>
+          </div>
+
+          {/* INVISIBLE, CLICKABLE INPUT */}
           <input
             id="todoFile"
             type="file"
             accept="image/*"
             onChange={handleFileChange}
+            className="file-hidden-input"
           />
         </div>
 

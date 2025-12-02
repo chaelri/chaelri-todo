@@ -11,7 +11,6 @@ body {
   color: #1e293b;
 }
 
-
 /* App container */
 .app-container {
   max-width: 700px;
@@ -433,12 +432,14 @@ select {
   font-size: 16px !important;
 }
 
-html, body {
+html,
+body {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-button, input {
+button,
+input {
   -webkit-touch-callout: none;
 }
 
@@ -462,7 +463,7 @@ button, input {
   cursor: pointer;
 
   transition: 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* hover lift */
@@ -501,7 +502,9 @@ button, input {
 }
 
 .modal-card {
-  max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px);
+  max-height: calc(
+    100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px
+  );
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: env(safe-area-inset-bottom);
@@ -509,28 +512,36 @@ button, input {
 
 .file-input-wrapper {
   background: #fdebf5;
+  padding: 10px 12px;
   border-radius: 10px;
-  padding: 10px;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .file-input-wrapper label {
   padding: 6px 12px;
-  border-radius: 8px;
   background: white;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  cursor: pointer;
+  border-radius: 8px;
   font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .file-input-wrapper span {
-  color: #63636b;
   font-size: 14px;
+  color: #57575f;
+  flex: 1;
 }
 
-.file-input-wrapper input {
-  display: none;
+.file-hidden-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  opacity: 0;
+  cursor: pointer;
 }
