@@ -1,5 +1,6 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "chaelri-todo",
+  "homepage": "https://chaelri.github.io/chaelri-todo",
   "private": true,
   "version": "0.0.0",
   "type": "module",

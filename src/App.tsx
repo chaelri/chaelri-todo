@@ -80,28 +80,30 @@ export default function App() {
         }
     }
 
+    console.log("VAPID KEY:", import.meta.env.VITE_VAPID_KEY);
+
+
     async function enableNotifications() {
+        console.log("Requesting notifications...");
+      
         if (!messaging) {
-            alert("Messaging not supported.");
-            return;
+          console.log("Messaging not initialized.");
+          alert("Messaging not supported.");
+          return;
         }
-
+      
         try {
-            const token = await getToken(messaging, {
-                vapidKey: import.meta.env.VITE_VAPID_KEY,
-            });
-
-            if (token) {
-                console.log("FCM Token:", token);
-                alert("Push notifications enabled! Token logged in console.");
-            } else {
-                alert("No token returned. User may have blocked notifications.");
-            }
+          const token = await getToken(messaging, {
+            vapidKey: import.meta.env.VITE_VAPID_KEY,
+          });
+          console.log("TOKEN RESULT:", token);
+          alert("Notifications enabled! Check console.");
         } catch (err) {
-            console.error("Error getting FCM token:", err);
-            alert("Failed to activate notifications.");
+          console.error("getToken ERROR:", err);
+          alert("Failed to activate notifications. Check console.");
         }
-    }
+      }
+      
 
 
 
