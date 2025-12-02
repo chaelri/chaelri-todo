@@ -84,9 +84,14 @@ export default function App() {
     }
 
     try {
-      const token = await getToken(messaging, {
-        vapidKey: import.meta.env.VITE_VAPID_KEY,
-      });
+        const token = await getToken(messaging, {
+            vapidKey: import.meta.env.VITE_VAPID_KEY,
+            serviceWorkerRegistration: await navigator.serviceWorker.register(
+              "/chaelri-todo/firebase-messaging-sw.js",
+              { scope: "/chaelri-todo/" }
+            )
+          });
+          
 
       console.log("FCM Token:", token);
       alert("Notifications enabled! Token printed in console.");
