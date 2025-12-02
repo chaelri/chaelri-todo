@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 interface Props {
   onAdd: (text: string | null, file?: File | null) => void;
   uploading?: boolean;
-  onBeforeAdd?: () => void;
+  onBeforeAdd?: () => void; // <-- ADD THIS
 }
 
 async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
@@ -32,14 +32,18 @@ async function resizeImageFile(file: File, maxWidth = 1024): Promise<File> {
         },
         file.type,
         0.8
-      ); // quality 0.8
+      );
     };
     img.onerror = () => resolve(file);
     img.src = url;
   });
 }
 
-export default function TodoForm({ onAdd, uploading = false }: Props) {
+export default function TodoForm({
+  onAdd,
+  uploading = false,
+  onBeforeAdd,
+}: Props) {
   const [text, setText] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -57,18 +61,16 @@ export default function TodoForm({ onAdd, uploading = false }: Props) {
       return;
     }
 
-    // resize before setting
     const resized = await resizeImageFile(f, 1024);
     setFile(resized);
 
-    const url = URL.createObjectURL(resized);
-    setPreview(url);
+    setPreview(URL.createObjectURL(resized));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (onBeforeAdd) onBeforeAdd(); // LEGAL user gesture
+    if (onBeforeAdd) onBeforeAdd(); // <-- FIX: safely call it
 
     if (!text.trim() && !file) {
       alert("Please enter text or choose an image.");

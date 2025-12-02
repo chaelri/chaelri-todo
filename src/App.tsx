@@ -406,7 +406,11 @@ export default function App() {
             </div>
 
             <div style={{ marginTop: 12 }}>
-              <TodoForm onAdd={addTodo} uploading={uploading} />
+              <TodoForm
+                onAdd={addTodo}
+                uploading={uploading}
+                onBeforeAdd={requestNotificationsIfNeeded}
+              />
             </div>
           </div>
         </div>
