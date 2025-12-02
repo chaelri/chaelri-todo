@@ -1,48 +1,50 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
+import { initializeApp } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 
-admin.initializeApp();
+initializeApp();
 
-export const onTodoCreated = functions.firestore
-  .document("todos/{todoId}")
-  .onCreate(
-    async (
-      snap: functions.firestore.QueryDocumentSnapshot,
-      context: functions.EventContext
-    ) => {
-      const data = snap.data();
-      const text = data.text || "(no text)";
-      const imageUrl = data.imageUrl || null;
+export const onTodoCreated = onDocumentCreated("todos/{todoId}", async (event) => {
+  const snap = event.data;
+  if (!snap) return;
 
-      console.log("New todo created:", data);
+  const data = snap.data();
+  const text = data.text || "(no text)";
+  const imageUrl = data.imageUrl || null;
 
-      const tokensSnap = await admin.firestore().collection("tokens").get();
-      const tokens = tokensSnap.docs.map((doc) => doc.id);
+  console.log("New todo created:", data);
 
-      if (tokens.length === 0) {
-        console.log("No tokens registered. Exiting.");
-        return;
-      }
+  // Fetch all FCM tokens
+  const db = getFirestore();
+  const tokensSnap = await db.collection("tokens").get();
+  const tokens = tokensSnap.docs.map((doc) => doc.id);
 
-      const payload: admin.messaging.MulticastMessage = {
-        notification: {
-          title: "New Todo Added!",
-          body: text,
-          ...(imageUrl ? { imageUrl } : {}),
-        },
-        webpush: {
-          fcmOptions: {
-            link: "https://chaelri.github.io/chaelri-todo/",
-          },
-        },
-        tokens,
-      };
+  if (tokens.length === 0) {
+    console.log("No tokens registered. Exiting.");
+    return;
+  }
 
-      const response = await admin.messaging().sendEachForMulticast(payload);
+  // Prepare notification payload
+  const messaging = getMessaging();
 
-      console.log("Push sent:", response.successCount, "success");
-      console.log("Errors:", response.failureCount);
+  const message: any = {
+    notification: {
+      title: "New Todo Added!",
+      body: text,
+      ...(imageUrl ? { imageUrl } : {}),
+    },
+    webpush: {
+      fcmOptions: {
+        link: "https://chaelri.github.io/chaelri-todo/",
+      },
+    },
+    tokens,
+  };
 
-      return;
-    }
-  );
+  // Send push
+  const response = await messaging.sendEachForMulticast(message);
+
+  console.log("Push sent:", response.successCount, "success");
+  console.log("Errors:", response.failureCount);
+});
