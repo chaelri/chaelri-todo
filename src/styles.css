@@ -3,8 +3,8 @@
 --------------------------------------------------*/
 body {
   margin: 0;
-  font-family: "Inter", sans-serif;
-  background: linear-gradient(to bottom, #ffeef7, #f4f1ff, #eef7ff);
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  background: linear-gradient(to bottom, #fff4fa 0%, #f8f5ff 50%, #f4faff 100%);
   color: #1e293b;
 }
 
@@ -420,4 +420,78 @@ header button:hover {
   .action-col {
     min-width: 44px;
   }
+}
+
+input,
+textarea,
+button,
+select {
+  font-size: 16px !important;
+}
+
+html, body {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input {
+  -webkit-touch-callout: none;
+}
+
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ----------------------------------------------
+   PREMIUM CSS CHECKBOX (CUTE + MODERN)
+------------------------------------------------*/
+.check-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #d4d4d8;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* hover lift */
+.check-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* UNCHECKED state */
+.check-btn.off {
+  border-color: #d4d4d8;
+  background: #ffffff;
+}
+
+/* CHECKED state */
+.check-btn.on {
+  background: #4ade80; /* green */
+  border-color: #4ade80;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.35);
+}
+
+/* CHECK MARK DRAWN WITH PURE CSS */
+.check-btn.on::after {
+  content: "";
+  width: 18px;
+  height: 10px;
+  border-left: 3px solid white;
+  border-bottom: 3px solid white;
+  rotate: -45deg;
+  border-radius: 2px;
+  display: block;
+}
+
+/* subtle pressing */
+.check-btn:active {
+  transform: scale(0.92);
 }

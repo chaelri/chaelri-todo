@@ -156,10 +156,8 @@ export default function TodoList({
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <button
                   onClick={() => onToggleDone(t.id, !!t.done)}
-                  className="icon-btn small"
-                >
-                  {t.done ? "✓" : "◻"}
-                </button>
+                  className={`check-btn ${t.done ? "on" : "off"}`}
+                ></button>
 
                 <button
                   onClick={() => onDelete(t.id)}
