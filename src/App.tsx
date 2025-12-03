@@ -135,19 +135,20 @@ export default function App() {
   }
 
   // Load comments for a todo
-  async function loadComments(todoId: string) {
-    const q = query(
-      collection(db, "todos", todoId, "comments"),
-      orderBy("createdAt", "asc")
-    );
-
+  async function loadComments(todoId: string): Promise<any[]> {
     return new Promise((resolve) => {
+      const q = query(
+        collection(db, "todos", todoId, "comments"),
+        orderBy("createdAt", "asc")
+      );
+
       onSnapshot(q, (snap) => {
-        const items = snap.docs.map((d) => ({
+        const list = snap.docs.map((d) => ({
           id: d.id,
           ...d.data(),
         }));
-        resolve(items);
+
+        resolve(list);
       });
     });
   }
