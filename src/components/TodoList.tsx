@@ -174,8 +174,6 @@ export default function TodoList({
                 </small>
                 <CommentSection
                   todoId={t.id}
-                  onAddComment={onAddComment}
-                  onLoadComments={onLoadComments}
                 />
               </div>
 
