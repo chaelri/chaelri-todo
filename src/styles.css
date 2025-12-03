@@ -132,7 +132,7 @@ header button:hover {
 --------------------------------------------------*/
 .todo-item {
   position: relative;
-  background: white;
+  background: rgb(255 255 255 / 70%);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.32);
@@ -586,7 +586,7 @@ body.dark {
 
 /* ---------- CARD / TODO ITEM ---------- */
 body.dark .todo-item {
-  background: #232326;
+  background: rgb(35 35 38 / 70%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
