@@ -318,8 +318,8 @@ header button:hover {
 --------------------------------------------------*/
 .toast-stack {
   position: fixed;
+  top: 18px;
   right: 16px;
-  bottom: 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -335,7 +335,7 @@ header button:hover {
   box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
   opacity: 0.98;
   transform-origin: bottom right;
-  animation: toast-in 220ms ease;
+  animation: toast-in 160ms ease;
 }
 
 @keyframes toast-in {

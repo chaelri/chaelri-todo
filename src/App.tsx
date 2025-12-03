@@ -41,7 +41,7 @@ export default function App() {
   const [toasts, setToasts] = useState<ToastObj[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  function showToast(message: string, timeout = 4000) {
+  function showToast(message: string, timeout = 2000) {
     const id = String(Math.random()).slice(2);
     setToasts((s) => [...s, { id, message, timeout }]);
   }
