@@ -4,13 +4,21 @@
 body {
   margin: 0;
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  background: linear-gradient(180deg, #ffeef7, #f4f1ff, #eef7ff);
+  background: transparent;
   background-attachment: fixed;
   background-size: cover;
   min-height: 100vh;
   color: #1e293b;
   overflow-x: hidden;
 }
+
+canvas {
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+
 
 /* App container */
 .app-container {
