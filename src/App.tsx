@@ -44,7 +44,17 @@ export default function App() {
 
   useEffect(() => {
     document.body.classList.toggle("dark", darkMode);
+    localStorage.setItem("darkMode", String(darkMode));
   }, [darkMode]);
+
+  // Load saved dark mode on first load
+  useEffect(() => {
+    const saved = localStorage.getItem("darkMode");
+    if (saved === "true") {
+      setDarkMode(true);
+      document.body.classList.add("dark");
+    }
+  }, []);
 
   function showToast(message: string, timeout = 4000) {
     const id = String(Math.random()).slice(2);
