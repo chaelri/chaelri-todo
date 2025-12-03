@@ -12,9 +12,8 @@ body {
   overflow-x: hidden;
 }
 
-/* keep the renderer behind UI and crisp-ish */
-div[ref] > canvas,
-div[style*="z-index: -10"] canvas {
+/* keep the WebGL canvas behind the UI */
+div[style*="z-index: -20"] canvas {
   image-rendering: pixelated;
 }
 canvas {
