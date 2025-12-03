@@ -5,7 +5,8 @@ interface Props {
 }
 
 export default function VideoBackground({ darkMode }: Props) {
-  const videoSrc = darkMode ? "/videos/dark.mp4" : "/videos/light.mp4";
+  const base = import.meta.env.BASE_URL || "";
+  const videoSrc = `${base}videos/${darkMode ? "dark" : "light"}.mp4`;
 
   return (
     <video
