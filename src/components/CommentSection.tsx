@@ -87,7 +87,7 @@ export default function CommentSection({
       {comments.map((c) => (
         <div
           key={c.id}
-          class="comment"
+          class={"comment"}
           style={{
             background: "rgba(0,0,0,0.05)",
             padding: "6px 10px 8px",
