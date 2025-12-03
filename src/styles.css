@@ -9,6 +9,7 @@ body {
   background-size: cover;
   min-height: 100vh;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
 /* App container */

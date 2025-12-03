@@ -129,37 +129,6 @@ export default function App() {
     }
   }
 
-  // Load comments for a todo
-  async function loadComments(todoId: string): Promise<any[]> {
-    return new Promise((resolve) => {
-      const q = query(
-        collection(db, "todos", todoId, "comments"),
-        orderBy("createdAt", "asc")
-      );
-
-      onSnapshot(q, (snap) => {
-        const list = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }));
-
-        resolve(list);
-      });
-    });
-  }
-
-  // Add comment
-  async function addComment(todoId: string, text: string) {
-    if (!text.trim()) return;
-
-    await addDoc(collection(db, "todos", todoId, "comments"), {
-      text,
-      createdAt: Timestamp.now(),
-    });
-
-    showToast("Comment added");
-  }
-
   //
   // ------------------------------
   // DELETE TODO
@@ -345,6 +314,9 @@ export default function App() {
   //
   return (
     <div className="app-container">
+    <CanvasBackground darkMode={darkMode} />
+
+
       <header>
         <h1>CharLa ToDo</h1>
         <button onClick={() => setDarkMode((s) => !s)}>
