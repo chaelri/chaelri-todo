@@ -1,6 +1,6 @@
 {
-  "name": "Chaelri ToDo",
-  "short_name": "ChaelriToDo",
+  "name": "CharLa ToDo",
+  "short_name": "CharLaToDo",
   "start_url": "/chaelri-todo/",
   "display": "standalone",
   "background_color": "#ffffff",

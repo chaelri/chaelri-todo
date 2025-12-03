@@ -310,7 +310,7 @@ export default function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>Chaelri ToDo</h1>
+        <h1>CharLa ToDo</h1>
         <button onClick={() => setDarkMode((s) => !s)}>
           {darkMode ? "Light" : "Dark"}
         </button>
