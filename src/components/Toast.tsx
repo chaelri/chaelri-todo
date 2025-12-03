@@ -11,7 +11,7 @@ export default function Toast({
   onClose,
 }: {
   toast: Toast;
-  onClose: (id: string, undo?: boolean) => void; // ← MATCH removeToast
+  onClose: (id: string) => void;
 }) {
   useEffect(() => {
     const t = setTimeout(() => onClose(toast.id), toast.timeout ?? 3000);
@@ -19,7 +19,7 @@ export default function Toast({
   }, [toast, onClose]);
 
   return (
-    <div className="toast" onClick={() => onClose(toast.id, true)}>
+    <div className="toast" onClick={() => onClose(toast.id)}>
       <div className="toast-body">{toast.message}</div>
     </div>
   );

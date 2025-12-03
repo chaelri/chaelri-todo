@@ -8,7 +8,7 @@ interface Props {
     createdAt: any;
     done?: boolean;
   }[];
-  onDelete: (id: string, item: any) => void; // ← FIXED signature
+  onDelete: (id: string) => void;
   onToggleDone: (id: string, current: boolean) => void;
   onEdit: (id: string, newText: string) => void;
   onImageClick: (url: string) => void;
@@ -70,11 +70,11 @@ export default function TodoList({
   // ⭐ FIXED: Delete animation + passes item for undo
   function handleDeleteWithAnimation(id: string, item: any) {
     const el = document.getElementById(`todo-${id}`);
-    if (!el) return onDelete(id, item);
+    if (!el) return onDelete(id);
 
     el.classList.add("delete-anim");
 
-    setTimeout(() => onDelete(id, item), 300);
+    setTimeout(() => onDelete(id), 300);
   }
 
   if (todos.length === 0) return <p>No todos yet</p>;

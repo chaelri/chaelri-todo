@@ -40,10 +40,6 @@ export default function App() {
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastObj[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [pendingDelete, setPendingDelete] = useState<{
-    id: string;
-    data: any;
-  } | null>(null);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -139,23 +135,14 @@ export default function App() {
   // DELETE TODO
   // ------------------------------
   //
-  async function deleteTodo(id: string, item?: any) {
-    // store item so we can undo
-    setPendingDelete({ id, data: item });
-    showToast("Deleted — Undo?", 3000);
-    vibrate(35);
-
-    // wait 3 sec before final delete
-    setTimeout(async () => {
-      if (pendingDelete && pendingDelete.id === id) {
-        try {
-          await deleteDoc(doc(db, "todos", id));
-        } catch (err) {
-          showToast("Failed to delete");
-        }
-        setPendingDelete(null);
-      }
-    }, 3000);
+  async function deleteTodo(id: string) {
+    try {
+      await deleteDoc(doc(db, "todos", id));
+      showToast("Deleted");
+    } catch (err) {
+      console.error("Delete error:", err);
+      showToast("Failed to delete");
+    }
   }
 
   //
