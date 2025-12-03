@@ -568,3 +568,24 @@ input {
     filter: blur(2px);
   }
 }
+
+body.dark {
+  background: linear-gradient(180deg, #1a1a1c, #202026, #18181b);
+  color: #e5e5e5;
+}
+
+body.dark .todo-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+body.dark .todo-form {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.dark input,
+body.dark button,
+body.dark .file-input-wrapper {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white;
+}

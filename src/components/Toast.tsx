@@ -19,7 +19,7 @@ export default function Toast({
   }, [toast, onClose]);
 
   return (
-    <div className="toast">
+    <div className="toast" onClick={() => onClose(toast.id, true)}>
       <div className="toast-body">{toast.message}</div>
     </div>
   );

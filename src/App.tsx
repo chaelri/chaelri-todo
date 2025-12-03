@@ -40,13 +40,32 @@ export default function App() {
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastObj[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{
+    id: string;
+    data: any;
+  } | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
 
-  function showToast(message: string, timeout = 2000) {
+  useEffect(() => {
+    document.body.classList.toggle("dark", darkMode);
+  }, [darkMode]);
+
+  function showToast(message: string, timeout = 4000) {
     const id = String(Math.random()).slice(2);
     setToasts((s) => [...s, { id, message, timeout }]);
   }
-  function removeToast(id: string) {
+  function removeToast(id: string, undo = false) {
+    if (undo && pendingDelete) {
+      // restore the deleted item
+      addDoc(collection(db, "todos"), pendingDelete.data);
+      setPendingDelete(null);
+      showToast("Restored");
+    }
     setToasts((s) => s.filter((t) => t.id !== id));
+  }
+
+  function vibrate(ms = 30) {
+    if (navigator.vibrate) navigator.vibrate(ms);
   }
 
   //
@@ -120,14 +139,23 @@ export default function App() {
   // DELETE TODO
   // ------------------------------
   //
-  async function deleteTodo(id: string) {
-    try {
-      await deleteDoc(doc(db, "todos", id));
-      showToast("Deleted");
-    } catch (err) {
-      console.error("Delete error:", err);
-      showToast("Failed to delete.");
-    }
+  async function deleteTodo(id: string, item?: any) {
+    // store item so we can undo
+    setPendingDelete({ id, data: item });
+    showToast("Deleted — Undo?", 3000);
+    vibrate(35);
+
+    // wait 3 sec before final delete
+    setTimeout(async () => {
+      if (pendingDelete && pendingDelete.id === id) {
+        try {
+          await deleteDoc(doc(db, "todos", id));
+        } catch (err) {
+          showToast("Failed to delete");
+        }
+        setPendingDelete(null);
+      }
+    }, 3000);
   }
 
   //
@@ -162,6 +190,7 @@ export default function App() {
           origin: { y: 0.7 },
         });
       }
+      vibrate(25);
     } catch (err) {
       console.error("Toggle error:", err);
       showToast("Failed to update");
@@ -301,6 +330,9 @@ export default function App() {
     <div className="app-container">
       <header>
         <h1>Chaelri ToDo</h1>
+        <button onClick={() => setDarkMode((s) => !s)}>
+          {darkMode ? "Light" : "Dark"}
+        </button>
       </header>
 
       <main>

@@ -8,7 +8,7 @@ interface Props {
     createdAt: any;
     done?: boolean;
   }[];
-  onDelete: (id: string) => void;
+  onDelete: (id: string, item: any) => void; // ← FIXED signature
   onToggleDone: (id: string, current: boolean) => void;
   onEdit: (id: string, newText: string) => void;
   onImageClick: (url: string) => void;
@@ -23,14 +23,14 @@ export default function TodoList({
 }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // For tilt effect: track which card is active and its small rotation values
+  // Tilt animation state
   const [activeTilt, setActiveTilt] = useState<{
     id: string | null;
     rx: number;
     ry: number;
   }>({ id: null, rx: 0, ry: 0 });
 
-  // Not hooks — just variables inside event handlers
+  // Touch swipe variables
   let startX = 0;
 
   function handleTouchStart(e: React.TouchEvent) {
@@ -49,16 +49,17 @@ export default function TodoList({
     if (diff > 80) onRight(); // right swipe
   }
 
-  // Mouse move handler for tilt (desktop)
+  // Mouse tilt interaction
   function handleMouseMove(e: React.MouseEvent, id: string) {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
     const dx = e.clientX - cx;
     const dy = e.clientY - cy;
-    // small normalized rotation values
-    const ry = Math.max(Math.min((dx / rect.width) * 6, 6), -6); // rotateY up to 6deg
-    const rx = Math.max(Math.min((-dy / rect.height) * 4, 4), -4); // rotateX up to 4deg
+
+    const ry = Math.max(Math.min((dx / rect.width) * 6, 6), -6);
+    const rx = Math.max(Math.min((-dy / rect.height) * 4, 4), -4);
+
     setActiveTilt({ id, rx, ry });
   }
 
@@ -66,13 +67,14 @@ export default function TodoList({
     setActiveTilt({ id: null, rx: 0, ry: 0 });
   }
 
-  function handleDeleteWithAnimation(id: string) {
+  // ⭐ FIXED: Delete animation + passes item for undo
+  function handleDeleteWithAnimation(id: string, item: any) {
     const el = document.getElementById(`todo-${id}`);
-    if (!el) return onDelete(id);
+    if (!el) return onDelete(id, item);
 
     el.classList.add("delete-anim");
 
-    setTimeout(() => onDelete(id), 300); // match CSS duration
+    setTimeout(() => onDelete(id, item), 300);
   }
 
   if (todos.length === 0) return <p>No todos yet</p>;
@@ -81,6 +83,7 @@ export default function TodoList({
     <div className="todo-list">
       {todos.map((t) => {
         const isActive = activeTilt.id === t.id;
+
         const transformStyle = isActive
           ? `perspective(900px) rotateX(${activeTilt.rx}deg) rotateY(${activeTilt.ry}deg)`
           : "none";
@@ -94,7 +97,7 @@ export default function TodoList({
             onTouchEnd={(e) =>
               handleTouchEnd(
                 e,
-                () => handleDeleteWithAnimation(t.id),
+                () => handleDeleteWithAnimation(t.id, t), // ← FIXED
                 () => onToggleDone(t.id, !!t.done)
               )
             }
@@ -170,7 +173,7 @@ export default function TodoList({
                 ></button>
 
                 <button
-                  onClick={() => handleDeleteWithAnimation(t.id)}
+                  onClick={() => handleDeleteWithAnimation(t.id, t)} // ← FIXED
                   className="icon-btn small danger"
                 >
                   🗑
