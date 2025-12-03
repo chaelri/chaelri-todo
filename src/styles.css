@@ -12,13 +12,15 @@ body {
   overflow-x: hidden;
 }
 
-/* ensure canvas lives behind UI, crisp voxels */
-div[style*="z-index: -2"] canvas {
+/* keep the renderer behind UI and crisp-ish */
+div[ref] > canvas,
+div[style*="z-index: -10"] canvas {
   image-rendering: pixelated;
 }
-
 canvas {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* App container */
