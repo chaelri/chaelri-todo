@@ -704,3 +704,7 @@ body.dark .todo-form button {
 body.dark .todo-form button:hover {
   background: #44444a !important;
 }
+
+body.dark header button {
+  background: #5b5b5f !important;
+}
