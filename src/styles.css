@@ -649,29 +649,29 @@ body.dark h2 {
 
 /* ---------- DARK MODE: MODAL BACKDROP ---------- */
 body.dark .modal-backdrop {
-  background: rgba(0,0,0,0.6) !important;
+  background: rgba(0, 0, 0, 0.6) !important;
 }
 
 /* ---------- DARK MODE: MODAL OUTER PANEL ---------- */
 body.dark .modal {
   background: #1a1a1d !important;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   color: #e5e5e5;
 }
 
 /* ---------- DARK MODE: MODAL INNER CONTENT ---------- */
 body.dark .todo-form {
   background: #232326 !important;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 4px 18px rgba(0,0,0,0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
   color: #e5e5e5;
 }
 
 /* ---------- CLOSE BUTTON ---------- */
 body.dark .modal-close {
   background: transparent !important;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: #ffffff !important;
 }
 
@@ -679,25 +679,25 @@ body.dark .modal-close {
 body.dark input,
 body.dark textarea {
   background: #2b2b2f !important;
-  border: 1px solid rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   color: #fff !important;
 }
 
 body.dark input::placeholder {
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* ---------- FILE INPUT ---------- */
 body.dark .file-input-wrapper {
   background: #2b2b2f !important;
-  border: 1px solid rgba(255,255,255,0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
   color: #dcdcdc !important;
 }
 
 /* ---------------- BUTTON inside MODAL ---------------- */
 body.dark .todo-form button {
   background: #3a3a3f !important;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: white !important;
 }
 
@@ -705,14 +705,13 @@ body.dark .todo-form button:hover {
   background: #44444a !important;
 }
 
-
-.app-container button img {
-  filter: brightness(1.2);
-}
-
 .app-container button {
-  background: transparent;
+  background: #3a3a3f;
   border: none;
   padding: 6px;
   cursor: pointer;
+}
+
+body.dark .app-container button {
+  background: white !important;
 }
