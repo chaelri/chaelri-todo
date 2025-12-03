@@ -631,8 +631,20 @@ body.dark .file-input-wrapper {
   color: #d5d5d5;
 }
 
-body.dark todo-item p {
+body.dark .file-input-wrapper label {
+  background: #5b5b5f !important;
+}
+
+body.dark .file-input-wrapper span {
+  color: white !important;
+}
+
+body.dark .todo-item p {
   color: #fff !important;
+}
+
+body.dark h2 {
+  color: black !important;
 }
 
 /* ---------- DARK MODE: MODAL BACKDROP ---------- */
