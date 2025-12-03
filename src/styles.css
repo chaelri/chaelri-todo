@@ -749,32 +749,6 @@ body.dark .comment {
   z-index: 10;
 }
 
-.carousel-card {
-  pointer-events: auto;
-}
-
-/*
-  Each card is still .todo-item, but we add this class
-  to give it consistent layering + disable horizontal stacking gaps.
-*/
-.carousel-card {
-  position: absolute;
-  left: 50%;
-  transform-style: preserve-3d;
-  width: 92%;
-  max-width: 650px;
-  transform: translateX(-50%);
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-
-/*
-  Prevent hover pop-out from ruining the carousel depth
-  (the tilt effect still works).
-*/
-.carousel-card:hover {
-  transform: none !important;
-}
-
 /*
   Adjust margins to zero because carousel handles spacing visually.
 */
@@ -782,24 +756,25 @@ body.dark .comment {
   margin-bottom: 0 !important;
 }
 
-/* Disable pointer events for faded cards if you want stricter UX.
-   Comment out if you still want clicking even on faded ones.
-*/
 .carousel-card {
-  pointer-events: auto;
-}
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 650px;
 
-/*
-   Optional: smoother fade for previous/next cards.
-*/
-.carousel-card {
+  pointer-events: auto;
+  transform-style: preserve-3d;
+
+  transition: transform 0.28s ease, opacity 0.28s ease;
   will-change: transform, opacity;
 }
 
-/* EXTRA SMOOTHNESS: avoid text jitter during 3D transforms */
-.carousel-card * {
-  backface-visibility: hidden;
+.carousel-vertical .carousel-card {
+  pointer-events: auto;
 }
+
+
 
 /* -------------------------------------------------
    MOBILE TWEAKS
