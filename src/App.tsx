@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 import Toast from "./components/Toast";
+import CanvasBackground from "./components/CanvasBackground";
 
 import { db, storage, messaging } from "./firebase";
 import {
