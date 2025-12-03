@@ -11,10 +11,10 @@ export default function Toast({
   onClose,
 }: {
   toast: Toast;
-  onClose: (id: string) => void;
+  onClose: (id: string, undo?: boolean) => void; // ← MATCH removeToast
 }) {
   useEffect(() => {
-    const t = setTimeout(() => onClose(toast.id), toast.timeout ?? 4000);
+    const t = setTimeout(() => onClose(toast.id), toast.timeout ?? 3000);
     return () => clearTimeout(t);
   }, [toast, onClose]);
 
