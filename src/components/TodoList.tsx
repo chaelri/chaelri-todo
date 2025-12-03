@@ -26,31 +26,6 @@ export default function TodoList({
 }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  // -------------------------------------------------
-  //  TILT (kept exactly as your original)
-  // -------------------------------------------------
-  const [activeTilt, setActiveTilt] = useState<{
-    id: string | null;
-    rx: number;
-    ry: number;
-  }>({ id: null, rx: 0, ry: 0 });
-
-  function handleMouseMove(e: React.MouseEvent, id: string) {
-    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = e.clientX - cx;
-    const dy = e.clientY - cy;
-
-    const ry = Math.max(Math.min((dx / rect.width) * 6, 6), -6);
-    const rx = Math.max(Math.min((-dy / rect.height) * 4, 4), -4);
-
-    setActiveTilt({ id, rx, ry });
-  }
-
-  function handleMouseLeave() {
-    setActiveTilt({ id: null, rx: 0, ry: 0 });
-  }
 
   // -------------------------------------------------
   //  SWIPE LEFT/RIGHT (kept 100% intact)
@@ -131,16 +106,8 @@ export default function TodoList({
         if (offset < -total / 2) offset += total;
 
         // transform values
-        const translateY = offset * 60;
-        const scale = offset === 0 ? 1 : 0.85;
         const opacity = offset === 0 ? 1 : 0.5;
         const zIndex = 100 - Math.abs(offset);
-
-        const isActiveTilt = activeTilt.id === t.id;
-
-        const tiltTransform = isActiveTilt
-          ? `perspective(900px) rotateX(${activeTilt.rx}deg) rotateY(${activeTilt.ry}deg)`
-          : "";
 
         return (
           <div
@@ -148,7 +115,7 @@ export default function TodoList({
             id={`todo-${t.id}`}
             className="todo-item carousel-card"
             style={{
-              transform: `${tiltTransform} translateY(${translateY}px) scale(${scale})`,
+              boxSizing: "border-box",
               opacity,
               zIndex,
               transition:
@@ -171,8 +138,6 @@ export default function TodoList({
             }}
             onMouseDown={handleVerticalStart}
             onMouseUp={handleVerticalEnd}
-            onMouseMove={(e) => handleMouseMove(e, t.id)}
-            onMouseLeave={handleMouseLeave}
           >
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div style={{ flex: 1, paddingRight: 12 }}>
