@@ -704,3 +704,15 @@ body.dark .todo-form button {
 body.dark .todo-form button:hover {
   background: #44444a !important;
 }
+
+
+.app-container button img {
+  filter: brightness(1.2);
+}
+
+.app-container button {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+}
