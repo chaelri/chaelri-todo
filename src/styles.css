@@ -723,3 +723,80 @@ body.dark header button {
 body.dark .comment {
   background: #5b5b5f !important;
 }
+
+/* -------------------------------------------------
+   VERTICAL CAROUSEL SYSTEM (NEW)
+--------------------------------------------------*/
+
+/* Main container holding the stacked cards */
+.carousel-vertical {
+  position: relative;
+  height: calc(100vh - 120px); /* leaves space for header + form */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  perspective: 1200px;
+  margin-top: 20px;
+}
+
+/*
+  Each card is still .todo-item, but we add this class
+  to give it consistent layering + disable horizontal stacking gaps.
+*/
+.carousel-card {
+  position: absolute;
+  left: 50%;
+  transform-style: preserve-3d;
+  width: 92%;
+  max-width: 650px;
+  transform: translateX(-50%);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+/*
+  Prevent hover pop-out from ruining the carousel depth
+  (the tilt effect still works).
+*/
+.carousel-card:hover {
+  transform: none !important;
+}
+
+/*
+  Adjust margins to zero because carousel handles spacing visually.
+*/
+.todo-item.carousel-card {
+  margin-bottom: 0 !important;
+}
+
+/* Disable pointer events for faded cards if you want stricter UX.
+   Comment out if you still want clicking even on faded ones.
+*/
+.carousel-card {
+  pointer-events: auto;
+}
+
+/*
+   Optional: smoother fade for previous/next cards.
+*/
+.carousel-card {
+  will-change: transform, opacity;
+}
+
+/* EXTRA SMOOTHNESS: avoid text jitter during 3D transforms */
+.carousel-card * {
+  backface-visibility: hidden;
+}
+
+/* -------------------------------------------------
+   MOBILE TWEAKS
+--------------------------------------------------*/
+@media (max-width: 520px) {
+  .carousel-vertical {
+    height: calc(100vh - 110px);
+  }
+
+  .carousel-card {
+    width: 94%;
+  }
+}
