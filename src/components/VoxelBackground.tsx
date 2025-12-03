@@ -405,7 +405,14 @@ export default function VoxelBackground({ darkMode = false }: Props) {
     /* ------------------ populate for mode ------------------ */
     function populateMode(isEnd: boolean) {
       // textures/colors/fog
-      const pal = isEnd ? PALETTES.the_end : PALETTES.overworld;
+      const pal: {
+        top: number;
+        soil: number;
+        rock: number;
+        water: number;
+        fog: number;
+      } = isEnd ? PALETTES.the_end : PALETTES.overworld;
+
       scene.background = new THREE.Color(pal.fog ?? pal.top);
       if (scene.fog instanceof THREE.FogExp2) {
         (scene.fog as THREE.FogExp2).color.set(pal.fog ?? pal.top);
