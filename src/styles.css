@@ -708,7 +708,7 @@ body.dark .todo-form button:hover {
 .app-container button {
   background: #3a3a3f;
   border: none;
-  padding: 6px;
+  padding: 6px 6px 0 6px;
   cursor: pointer;
 }
 
