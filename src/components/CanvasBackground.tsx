@@ -1,181 +1,14 @@
 import React, { useEffect, useRef } from "react";
 
 /**
- * Full Biome Cycle Canvas Background
- * - Drop in as <CanvasBackground darkMode={darkMode} />
- * - Procedural, no images
+ * CanvasBackground: Block-texture, parallax Minecraft-like background
+ * Usage: <CanvasBackground darkMode={darkMode} />
+ *
+ * Key knobs:
+ * - blockSize: pixel size of one block (try 12,16,20)
+ * - layers: number of parallax terrain layers
+ * - layerGap: vertical separation between layers
  */
-
-type BiomeKey =
-  | "overworld"
-  | "desert"
-  | "snow"
-  | "jungle"
-  | "ocean"
-  | "nether"
-  | "the_end";
-
-type BiomeConfig = {
-  id: BiomeKey;
-  name: string;
-  // sky gradient colors [top, bottom]
-  skyTop: string;
-  skyBottom: string;
-  // cloud & particle color hints
-  cloudColor: string;
-  particleColor: string;
-  // particle mode
-  particleMode: "dust" | "snow" | "leaf" | "bubble" | "ember" | "mote" | "none";
-  // intensity multipliers
-  particleCount: number;
-  cloudOpacity: number;
-  stars?: boolean;
-};
-
-const BIOMES: BiomeConfig[] = [
-  {
-    id: "overworld",
-    name: "Overworld",
-    skyTop: "#79c2ff",
-    skyBottom: "#6cb8ff",
-    cloudColor: "#ffffff",
-    particleColor: "rgba(255,255,255,0.35)",
-    particleMode: "dust",
-    particleCount: 30,
-    cloudOpacity: 0.95,
-    stars: false,
-  },
-  {
-    id: "desert",
-    name: "Desert",
-    skyTop: "#ffd27f",
-    skyBottom: "#f5b957",
-    cloudColor: "rgba(255,240,200,0.85)",
-    particleColor: "rgba(255,220,140,0.45)",
-    particleMode: "dust",
-    particleCount: 22,
-    cloudOpacity: 0.85,
-    stars: false,
-  },
-  {
-    id: "snow",
-    name: "Snow",
-    skyTop: "#dff3ff",
-    skyBottom: "#bfe9ff",
-    cloudColor: "rgba(250,250,255,0.98)",
-    particleColor: "rgba(255,255,255,0.95)",
-    particleMode: "snow",
-    particleCount: 60,
-    cloudOpacity: 1,
-    stars: false,
-  },
-  {
-    id: "jungle",
-    name: "Jungle",
-    skyTop: "#9fe8a8",
-    skyBottom: "#66b36b",
-    cloudColor: "rgba(220,245,210,0.95)",
-    particleColor: "rgba(200,255,200,0.45)",
-    particleMode: "leaf",
-    particleCount: 28,
-    cloudOpacity: 0.9,
-    stars: false,
-  },
-  {
-    id: "ocean",
-    name: "Ocean",
-    skyTop: "#7ed2ff",
-    skyBottom: "#2fa8d4",
-    cloudColor: "rgba(230,250,255,0.98)",
-    particleColor: "rgba(200,240,255,0.5)",
-    particleMode: "bubble",
-    particleCount: 24,
-    cloudOpacity: 0.92,
-    stars: false,
-  },
-  {
-    id: "nether",
-    name: "Nether",
-    skyTop: "#60211b",
-    skyBottom: "#310b0b",
-    cloudColor: "rgba(255,120,80,0.9)",
-    particleColor: "rgba(255,140,60,0.9)",
-    particleMode: "ember",
-    particleCount: 40,
-    cloudOpacity: 0.85,
-    stars: false,
-  },
-  {
-    id: "the_end",
-    name: "The End",
-    skyTop: "#160524",
-    skyBottom: "#0a0720",
-    cloudColor: "rgba(180,120,255,0.85)",
-    particleColor: "rgba(200,150,255,0.9)",
-    particleMode: "mote",
-    particleCount: 36,
-    cloudOpacity: 0.9,
-    stars: true,
-  },
-];
-
-// helper lerp
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-// color lerp for hex-ish rgb strings (assumes valid #rrggbb)
-function hexToRgb(hex: string) {
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16);
-  const g = parseInt(c.substring(2, 4), 16);
-  const b = parseInt(c.substring(4, 6), 16);
-  return { r, g, b };
-}
-function rgbToHex(r: number, g: number, b: number) {
-  const toHex = (n: number) =>
-    Math.max(0, Math.min(255, Math.round(n)))
-      .toString(16)
-      .padStart(2, "0");
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-}
-function mixColorHex(a: string, b: string, t: number) {
-  // allow rgba(...) too: try to parse; fallback to hex
-  try {
-    if (
-      a.startsWith("rgba") ||
-      a.startsWith("rgb") ||
-      b.startsWith("rgba") ||
-      b.startsWith("rgb")
-    ) {
-      // quick parse rgba -> rgba components
-      const parse = (s: string) => {
-        const nums = s
-          .replace(/[^\d.,]/g, "")
-          .split(",")
-          .map(Number);
-        return {
-          r: nums[0] ?? 0,
-          g: nums[1] ?? 0,
-          b: nums[2] ?? 0,
-          a: nums[3] ?? 1,
-        };
-      };
-      const ca = parse(a);
-      const cb = parse(b);
-      const r = lerp(ca.r, cb.r, t);
-      const g = lerp(ca.g, cb.g, t);
-      const b2 = lerp(ca.b, cb.b, t);
-      const a2 = lerp(ca.a, cb.a, t);
-      return `rgba(${Math.round(r)},${Math.round(g)},${Math.round(b2)},${a2})`;
-    }
-    const A = hexToRgb(a);
-    const B = hexToRgb(b);
-    const r = lerp(A.r, B.r, t);
-    const g = lerp(A.g, B.g, t);
-    const bl = lerp(A.b, B.b, t);
-    return rgbToHex(r, g, bl);
-  } catch (e) {
-    return a;
-  }
-}
 
 export default function CanvasBackground({
   darkMode = false,
@@ -191,349 +24,272 @@ export default function CanvasBackground({
     let w = (canvas.width = window.innerWidth);
     let h = (canvas.height = window.innerHeight);
 
-    // Cycle settings
-    const biomeOrder = BIOMES;
-    const biomeDurationMs = 30_000; // each biome shown ~30s
-    const transitionMs = 2500; // blend time between biomes
-    const totalCycle = biomeOrder.length * biomeDurationMs;
+    // TUNABLES
+    const blockSize = 16; // size of a single block pixel (increase for chunkier look)
+    const layers = 3; // foreground -> mid -> far
+    const layerGap = 48; // vertical spacing between layers
+    const baseSpeed = 0.2; // base horizontal speed (pixels per frame-ish)
+    const terrainWidthBlocks = Math.ceil(w / blockSize) + 40; // width in blocks for generation
+    const seaLevel = Math.round(h * 0.56); // baseline height in px where terrain sits
 
-    // Clouds - blocky chunk patterns
-    type Cloud = {
-      x: number;
-      y: number;
-      speed: number;
-      scale: number;
-      layer: number;
-      id: number;
-    };
-    const clouds: Cloud[] = [];
-    let cloudIdCounter = 0;
+    // Offscreen tiles (grass, dirt, stone)
+    function createGrassTile(blockSize: number, dark = false) {
+      const oc = document.createElement("canvas");
+      oc.width = blockSize;
+      oc.height = blockSize;
+      const octx = oc.getContext("2d")!;
+      // Grass top: two-tone
+      const grassTopA = dark ? "#3b7a3b" : "#60a84b";
+      const grassTopB = dark ? "#2f6a2f" : "#4a8a39";
+      // dirt base
+      const dirtA = dark ? "#3b2f22" : "#b18a58";
+      const dirtB = dark ? "#4a382b" : "#9b6f44";
 
-    function initClouds() {
-      clouds.length = 0;
-      const base = 10; // number of clouds (will be spread across layers)
-      for (let i = 0; i < base; i++) {
-        clouds.push({
-          x: Math.random() * w,
-          y: Math.random() * h * 0.45,
-          speed: 0.15 + Math.random() * 0.4,
-          scale: 0.8 + Math.random() * 2.2,
-          layer: Math.floor(Math.random() * 3),
-          id: cloudIdCounter++,
-        });
+      // draw pixel rows (top-down for a little 3D effect)
+      // top row (grass edge)
+      octx.fillStyle = grassTopA;
+      octx.fillRect(0, 0, blockSize, Math.max(2, Math.floor(blockSize * 0.18)));
+      // second row (grass shade)
+      octx.fillStyle = grassTopB;
+      octx.fillRect(
+        0,
+        Math.floor(blockSize * 0.18),
+        blockSize,
+        Math.max(1, Math.floor(blockSize * 0.16))
+      );
+      // dirt rows
+      octx.fillStyle = dirtA;
+      octx.fillRect(
+        0,
+        Math.floor(blockSize * 0.34),
+        blockSize,
+        Math.floor(blockSize * 0.66)
+      );
+      // add small pixel noise for "texture"
+      for (let i = 0; i < Math.round(blockSize * 1.2); i++) {
+        const x = Math.floor(Math.random() * blockSize);
+        const y = Math.floor(
+          Math.random() * blockSize * 0.66 + Math.floor(blockSize * 0.34)
+        );
+        octx.fillStyle = Math.random() > 0.6 ? dirtB : dirtA;
+        octx.fillRect(x, y, 1, 1);
       }
+      return oc;
     }
 
-    // Particles
-    type Particle = {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-      life: number;
-      maxLife: number;
-      color?: string;
-    };
-    const particles: Particle[] = [];
+    function createStoneTile(blockSize: number, dark = false) {
+      const oc = document.createElement("canvas");
+      oc.width = blockSize;
+      oc.height = blockSize;
+      const octx = oc.getContext("2d")!;
+      const stoneA = dark ? "#3b3b3b" : "#a0a0a0";
+      const stoneB = dark ? "#2f2f2f" : "#8a8a8a";
 
-    // Stars (for night biomes)
-    const stars: { x: number; y: number; size: number; alpha: number }[] = [];
-    function initStars() {
-      stars.length = 0;
-      for (let i = 0; i < 120; i++) {
-        stars.push({
-          x: Math.random() * w,
-          y: Math.random() * h * 0.6,
-          size: Math.random() * 2.2,
-          alpha: 0.3 + Math.random() * 0.9,
-        });
+      octx.fillStyle = stoneA;
+      octx.fillRect(0, 0, blockSize, blockSize);
+      // pixel noise
+      for (let i = 0; i < Math.round(blockSize * 1.5); i++) {
+        const x = Math.floor(Math.random() * blockSize);
+        const y = Math.floor(Math.random() * blockSize);
+        octx.fillStyle = Math.random() > 0.7 ? stoneB : stoneA;
+        octx.fillRect(x, y, 1, 1);
       }
+      return oc;
     }
 
-    initClouds();
-    initStars();
+    // Generate tiles
+    let grassTile = createGrassTile(blockSize, darkMode);
+    let stoneTile = createStoneTile(blockSize, darkMode);
 
-    // lightning
-    let lightningTimer = 0;
-
-    // resize handling
-    function onResize() {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
-      // regenerate stars to fill new size
-      initStars();
-    }
-    window.addEventListener("resize", onResize);
-
-    // helpers: draw blocky cloud chunk at (x,y) with scale
-    function drawBlockCloud(
-      x: number,
-      y: number,
-      scale: number,
-      blockSize = 16,
-      color = "#fff"
+    // utility height generator (block units) - combines sines + random
+    function generateHeightArray(
+      widthBlocks: number,
+      amplitudeBlocks: number,
+      seed = Math.random() * 1000
     ) {
-      ctx.fillStyle = color;
-      // define simple chunk pattern (5x3-ish)
-      const pattern = [
-        [0, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1],
-        [0, 1, 1, 1, 0],
-      ];
-      const bs = Math.round(blockSize * scale);
-      for (let ry = 0; ry < pattern.length; ry++) {
-        for (let rx = 0; rx < pattern[0].length; rx++) {
-          if (pattern[ry][rx]) {
-            ctx.fillRect(x + rx * bs, y + ry * bs, bs, bs);
+      const arr: number[] = new Array(widthBlocks);
+      for (let x = 0; x < widthBlocks; x++) {
+        const t = x / widthBlocks;
+        // combine several sine waves + pseudo-random jitter
+        const val =
+          Math.sin((x + seed) * 0.02) * (amplitudeBlocks * 0.45) +
+          Math.sin((x + seed) * 0.007) * (amplitudeBlocks * 0.25) +
+          Math.sin((x + seed) * 0.04) * (amplitudeBlocks * 0.15) +
+          Math.sin(x * 12 + seed) * 0.5;
+        // small random jitter per position (stable)
+        const jitter =
+          (Math.abs(Math.sin(x * 7.13 + seed)) - 0.5) * (amplitudeBlocks * 0.2);
+        arr[x] = Math.max(1, Math.round(amplitudeBlocks + val + jitter));
+      }
+      return arr;
+    }
+
+    // Build per-layer terrain data
+    type Layer = {
+      speed: number;
+      offset: number;
+      heightBlocks: number; // rough amplitude in blocks
+      heights: number[]; // block heights per column
+      yBase: number; // pixel baseline for this layer
+      scale: number; // scale multiplier for block size (near layers bigger)
+    };
+
+    const layerArr: Layer[] = [];
+    function buildLayers() {
+      layerArr.length = 0;
+      for (let i = 0; i < layers; i++) {
+        const near = i === 0; // 0 = nearest (foreground)
+        const depthFactor = 1 + i * 0.6;
+        const scale = 1 - i * 0.12; // farther layers slightly smaller blocks visually
+        const speed = baseSpeed * (1 + i * 0.35) * (near ? 1.4 : 1);
+        const heightBlocks = Math.round(6 + (layers - i) * 3); // amplitude in blocks
+        const heights = generateHeightArray(
+          terrainWidthBlocks,
+          heightBlocks,
+          1000 + i * 13
+        );
+        const yBase = seaLevel + i * layerGap * (1 + i * 0.12);
+        layerArr.push({
+          speed,
+          offset: Math.random() * 1000,
+          heightBlocks,
+          heights,
+          yBase,
+          scale,
+        });
+      }
+    }
+    buildLayers();
+
+    // redraw offscreen tiles on darkMode toggle
+    function regenTiles() {
+      grassTile = createGrassTile(blockSize, darkMode);
+      stoneTile = createStoneTile(blockSize, darkMode);
+    }
+
+    // draw one layer
+    function drawLayer(layer: Layer) {
+      const tile = grassTile; // reuse grass for top + dirt below (we used grass tile that includes dirt)
+      const cols = layer.heights.length;
+      const bs = Math.round(blockSize * layer.scale);
+      const offsetBlocks = Math.floor(layer.offset / bs);
+
+      // draw columns spanning canvas width (extra buffer)
+      for (let i = -20; i < Math.ceil(w / bs) + 20; i++) {
+        const colIndex = (i + offsetBlocks) % cols;
+        const idx = colIndex < 0 ? colIndex + cols : colIndex;
+        const heightBlocks = layer.heights[idx];
+        // compute top-left pixel for block stack
+        const x = i * bs - (layer.offset % bs);
+        const topY = Math.round(layer.yBase - heightBlocks * bs);
+        // draw stacked tiles for this column (block-by-block to preserve pixelated look)
+        for (let b = 0; b < heightBlocks; b++) {
+          const y = topY + b * bs;
+          // decide tile type: top block = grass, below maybe dirt/stone
+          // topmost block gets grass tile; deeper blocks use stone tile occasionally
+          if (b === 0) {
+            // draw grass tile
+            ctx.drawImage(tile, Math.round(x), Math.round(y), bs, bs);
+          } else {
+            // draw dirt/stone mix: use grassTile but overlay darker for variety
+            if (b > heightBlocks - 2 && Math.random() > 0.85) {
+              ctx.drawImage(stoneTile, Math.round(x), Math.round(y), bs, bs);
+            } else {
+              ctx.drawImage(tile, Math.round(x), Math.round(y), bs, bs);
+            }
           }
         }
+        // optional silhouette smoothing: simple shadow below column (tiny darker rect)
+        ctx.fillStyle = "rgba(0,0,0,0.03)";
+        ctx.fillRect(x, layer.yBase + 2, Math.max(0, bs), 4);
       }
     }
 
-    // spawn particles for current biome
-    function spawnParticleForBiome(b: BiomeConfig) {
-      // limit total
-      if (particles.length > 220) return;
-      const base = {
-        dust: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: Math.random() * h,
-            vx: -0.1 + Math.random() * 0.2,
-            vy: -0.15 - Math.random() * 0.3,
-            size: 1 + Math.random() * 2.5,
-            life: 0,
-            maxLife: 200 + Math.random() * 300,
-            color: b.particleColor,
-          });
-        },
-        snow: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: -10,
-            vx: -0.3 + Math.random() * 0.6,
-            vy: 0.5 + Math.random() * 1.2,
-            size: 1 + Math.random() * 3.5,
-            life: 0,
-            maxLife: 600 + Math.random() * 600,
-            color: b.particleColor,
-          });
-        },
-        leaf: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: -10,
-            vx: -0.8 + Math.random() * 1.6,
-            vy: 0.2 + Math.random() * 0.8,
-            size: 2 + Math.random() * 3,
-            life: 0,
-            maxLife: 400 + Math.random() * 600,
-            color: b.particleColor,
-          });
-        },
-        bubble: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: h + 10,
-            vx: -0.2 + Math.random() * 0.4,
-            vy: -0.3 - Math.random() * 0.5,
-            size: 1 + Math.random() * 2.5,
-            life: 0,
-            maxLife: 300 + Math.random() * 300,
-            color: b.particleColor,
-          });
-        },
-        ember: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: Math.random() * h * 0.5,
-            vx: -0.2 + Math.random() * 0.6,
-            vy: -0.5 - Math.random() * 0.6,
-            size: 1 + Math.random() * 3.5,
-            life: 0,
-            maxLife: 160 + Math.random() * 160,
-            color: b.particleColor,
-          });
-        },
-        mote: () => {
-          particles.push({
-            x: Math.random() * w,
-            y: Math.random() * h * 0.6,
-            vx: -0.1 + Math.random() * 0.2,
-            vy: -0.05 + Math.random() * 0.1,
-            size: 0.6 + Math.random() * 2,
-            life: 0,
-            maxLife: 400 + Math.random() * 500,
-            color: b.particleColor,
-          });
-        },
-      } as any;
-
-      const fn = base[b.particleMode] || base.dust;
-      // spawn a few
-      for (let i = 0; i < Math.max(1, Math.round(b.particleCount / 6)); i++)
-        fn();
+    // sun / moon (pixel square)
+    function drawSunMoon(t: number) {
+      // t is 0..1 within the full day cycle. We'll place sun across top
+      const cycle = (Date.now() / 20000) % 1;
+      const cx = w * (0.2 + 0.6 * cycle);
+      const cy = h * 0.2 + Math.sin(cycle * Math.PI * 2) * 40;
+      const size = blockSize * 1.4;
+      ctx.fillStyle = darkMode ? "#d0d0ff" : "#ffd94a";
+      ctx.fillRect(
+        Math.round(cx - size / 2),
+        Math.round(cy - size / 2),
+        Math.round(size),
+        Math.round(size)
+      );
     }
 
     // main render loop
-    let rafId = 0;
+    let raf = 0;
     function render() {
-      const now = Date.now();
-      const cyclePos = (now % totalCycle) / totalCycle; // 0..1 across full cycle
-      // determine current biome index and progress into it
-      const totalBiomes = biomeOrder.length;
-      const raw = (now % (totalBiomes * biomeDurationMs)) / biomeDurationMs; // [0..n)
-      const idx = Math.floor(raw) % totalBiomes;
-      const innerT = raw - Math.floor(raw); // 0..1 progress inside biome
-      // transition factor for blending between this biome and next
-      const blendT = Math.min(
-        1,
-        Math.max(0, (innerT * biomeDurationMs) / transitionMs)
-      );
-      const cur = biomeOrder[idx];
-      const next = biomeOrder[(idx + 1) % totalBiomes];
-
-      // clear
-      ctx.clearRect(0, 0, w, h);
-
-      // blended sky gradient
-      const topColor = mixColorHex(cur.skyTop, next.skyTop, blendT);
-      const bottomColor = mixColorHex(cur.skyBottom, next.skyBottom, blendT);
-
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
-      skyGrad.addColorStop(0, topColor);
-      skyGrad.addColorStop(1, bottomColor);
-      ctx.fillStyle = skyGrad;
+      // background gradient (subtle)
+      const top = darkMode ? "#050607" : "#8fd1ff";
+      const bottom = darkMode ? "#080809" : "#5fb0ff";
+      const g = ctx.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, top);
+      g.addColorStop(1, bottom);
+      ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
 
-      // stars if either biome supports stars (blended)
-      const starVisible =
-        (cur.stars ? 1 : 0) * (1 - blendT) + (next.stars ? 1 : 0) * blendT;
-      if (starVisible > 0.05) {
-        const alpha = Math.min(1, starVisible);
-        stars.forEach((s, i) => {
-          ctx.fillStyle = `rgba(255,255,255,${s.alpha * alpha * 0.9})`;
-          ctx.fillRect(s.x, s.y, s.size, s.size);
-        });
+      // slight pixelated fog overlay (optional)
+      ctx.fillStyle = darkMode ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.02)";
+      ctx.fillRect(0, 0, w, h);
+
+      // update layer offsets and draw from farthest to nearest
+      for (let li = layerArr.length - 1; li >= 0; li--) {
+        const L = layerArr[li];
+        // update offset for parallax
+        L.offset += L.speed;
+        // clamp offset to avoid huge numbers
+        if (L.offset > 1e6)
+          L.offset = L.offset % (terrainWidthBlocks * blockSize);
+        // draw layer with slight vertical offset based on depth
+        ctx.save();
+        // apply slight parallax vertical shift based on offset for small wobble
+        ctx.translate(0, -li * (li * 2));
+        drawLayer(L);
+        ctx.restore();
       }
 
-      // sky vignette subtle
-      ctx.fillStyle = "rgba(0,0,0,0.02)";
-      ctx.fillRect(0, h * 0.78, w, h * 0.22);
+      // draw sun/moon
+      drawSunMoon((Date.now() % 60000) / 60000);
 
-      // move clouds - per-layer parallax; color blends
-      const cloudColor = mixColorHex(cur.cloudColor, next.cloudColor, blendT);
-      clouds.forEach((c) => {
-        // layer affects vertical parallax and size
-        const layerFactor = 1 + c.layer * 0.25;
-        c.x += c.speed * (0.9 + c.layer * 0.6); // foreground faster
-        if (c.x > w + 300) c.x = -300 - Math.random() * 200;
-        // draw block cloud (three rows)
-        const opacity =
-          (cur.cloudOpacity * (1 - blendT) + next.cloudOpacity * blendT) * 0.9;
-        // apply alpha by drawing onto offscreen or using rgba if cloudColor is hex
-        let drawColor = cloudColor;
-        if (!drawColor.startsWith("rgba") && !drawColor.startsWith("rgb")) {
-          // convert hex to rgba with opacity
-          const { r, g, b } = hexToRgb(drawColor);
-          drawColor = `rgba(${r},${g},${b},${opacity})`;
-        } else {
-          // mix rgba
-          drawColor = mixColorHex(
-            drawColor,
-            "rgba(255,255,255,0.0)",
-            1 - opacity
-          );
-        }
-        drawBlockCloud(
-          c.x,
-          c.y + c.layer * 18,
-          c.scale * (1 + c.layer * 0.2),
-          14,
-          drawColor
-        );
-      });
-
-      // spawn particles occasionally
-      if (Math.random() < 0.25) spawnParticleForBiome(cur);
-
-      // update & draw particles
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.life++;
-        // life-based alpha
-        const alpha = 1 - p.life / p.maxLife;
-        if (
-          alpha <= 0 ||
-          p.x < -50 ||
-          p.x > w + 50 ||
-          p.y < -80 ||
-          p.y > h + 80
-        ) {
-          particles.splice(i, 1);
-          continue;
-        }
-        ctx.fillStyle = p.color ?? "rgba(255,255,255,0.6)";
-        // particle rendering differs per mode: rounded or square
-        if (cur.particleMode === "snow") {
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,255,255,${Math.max(0.12, alpha * 0.95)})`;
-          ctx.fill();
-        } else if (cur.particleMode === "bubble") {
-          ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.6})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, Math.max(1, p.size), 0, Math.PI * 2);
-          ctx.stroke();
-        } else if (cur.particleMode === "ember") {
-          ctx.fillStyle = `rgba(255,${120 + Math.random() * 80},0,${alpha})`;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-        } else if (cur.particleMode === "leaf") {
-          ctx.fillStyle = `rgba(90,140,60,${alpha})`;
-          ctx.fillRect(
-            p.x,
-            p.y,
-            Math.max(1.5, p.size),
-            Math.max(1.5, p.size * 0.7)
-          );
-        } else if (cur.particleMode === "mote") {
-          ctx.fillStyle = `rgba(200,150,255,${alpha})`;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-        } else {
-          // dust default: tiny rectangles
-          ctx.fillStyle = `rgba(210,200,180,${alpha * 0.7})`;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-        }
-      }
-
-      // lightning: small chance during overworld/nether storms; give subtle flash sometimes
-      if (
-        Math.random() < 0.0006 &&
-        (cur.id === "overworld" || cur.id === "nether")
-      ) {
-        lightningTimer = 8 + Math.floor(Math.random() * 10);
-      }
-      if (lightningTimer > 0) {
-        ctx.fillStyle = `rgba(255,255,255,${Math.max(
-          0.03,
-          lightningTimer / 20
-        )})`;
-        ctx.fillRect(0, 0, w, h);
-        lightningTimer--;
-      }
-
-      rafId = requestAnimationFrame(render);
+      raf = requestAnimationFrame(render);
     }
 
-    rafId = requestAnimationFrame(render);
+    // handle window resize: regenerate heights and tiles to fit new size
+    function handleResize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      // rebuild terrain width & heights
+      const newWidthBlocks = Math.ceil(w / blockSize) + 40;
+      for (let i = 0; i < layerArr.length; i++) {
+        layerArr[i].heights = generateHeightArray(
+          newWidthBlocks,
+          layerArr[i].heightBlocks,
+          1000 + i * 13
+        );
+      }
+      // regen stars or other large precomputed items if we had
+      regenTiles();
+    }
+    window.addEventListener("resize", handleResize);
+
+    // re-generate the layers if blockSize or darkMode changes (simple approach)
+    function rebuildAll() {
+      buildLayers();
+      regenTiles();
+    }
+
+    // Kick off
+    render();
 
     // cleanup
     return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", handleResize);
     };
   }, [darkMode]);
 
@@ -544,8 +300,8 @@ export default function CanvasBackground({
         position: "fixed",
         inset: 0,
         zIndex: -1,
-        display: "block",
         pointerEvents: "none",
+        imageRendering: "pixelated",
       }}
     />
   );

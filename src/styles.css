@@ -13,12 +13,12 @@ body {
 }
 
 canvas {
-  will-change: transform;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  z-index: -1;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  image-rendering: pixelated; /* makes scaled blocks look crisp */
 }
-
-
 
 /* App container */
 .app-container {
