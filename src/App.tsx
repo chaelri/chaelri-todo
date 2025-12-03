@@ -40,12 +40,10 @@ export default function App() {
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null);
   const [toasts, setToasts] = useState<ToastObj[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
 
-  useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
-    localStorage.setItem("darkMode", String(darkMode));
-  }, [darkMode]);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem("darkMode") === "true";
+  });
 
   // Load saved dark mode on first load
   useEffect(() => {
