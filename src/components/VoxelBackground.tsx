@@ -554,28 +554,6 @@ export default function VoxelBackground({
       }
     }
 
-    // End pillars
-    function createEndPillars() {
-      pillarsGroup.clear();
-      const n = 12;
-      for (let i = 0; i < n; i++) {
-        const x = (Math.random() - 0.5) * GRID_W * 0.6;
-        const z = (Math.random() - 0.5) * GRID_D * 0.6;
-        const height = 6 + Math.floor(Math.random() * 16);
-        for (let y = 0; y < height; y++) {
-          const cube = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshStandardMaterial({
-              color: 0x0b0610,
-              flatShading: true,
-            })
-          );
-          cube.position.set(x, y, z);
-          pillarsGroup.add(cube);
-        }
-      }
-    }
-
     // initial biome
     let activeBiome: BiomeKey = darkMode ? "the_end" : "overworld";
     if (selectedBiome !== "auto") activeBiome = selectedBiome as BiomeKey;
