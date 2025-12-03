@@ -568,24 +568,85 @@ input {
     filter: blur(2px);
   }
 }
-
+/* ---------- DARK MODE ROOT ---------- */
 body.dark {
-  background: linear-gradient(180deg, #1a1a1c, #202026, #18181b);
-  color: #e5e5e5;
+  background: linear-gradient(180deg, #0f0f10, #1a1a1c, #141416);
+  color: #e6e6e6;
 }
 
+/* ---------- CARD / TODO ITEM ---------- */
 body.dark .todo-item {
-  background: rgba(255, 255, 255, 0.08);
+  background: #232326;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* title & timestamp inside card */
+body.dark .todo-item h3,
+body.dark .todo-item span {
+  color: #dcdcdc;
+}
+
+/* ---------- CHECK / UNCHECK CIRCLES ---------- */
+body.dark .todo-check {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: transparent;
+}
+
+body.dark .todo-check.completed {
+  border-color: #4ade80;
+  background: rgba(74, 222, 128, 0.15);
+}
+
+/* ---------- TRASH BUTTON ---------- */
+body.dark .delete-btn {
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-body.dark .todo-form {
-  background: rgba(255, 255, 255, 0.1);
+body.dark .delete-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 
+/* ---------- FORM / MODAL ---------- */
+body.dark .todo-form {
+  background: #1c1c1f !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+/* modal close button */
+body.dark .modal-close {
+  color: #e5e5e5;
+}
+
+/* ---------- INPUT + FILE INPUT ---------- */
 body.dark input,
-body.dark button,
+body.dark textarea,
+body.dark select {
+  background: #2a2a2e !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+body.dark input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* file input wrapper */
 body.dark .file-input-wrapper {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: white;
+  background: #2a2a2e !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #d5d5d5;
+}
+
+/* ---------- ADD BUTTON ---------- */
+body.dark button {
+  background: #3a3a3f !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body.dark button:hover {
+  background: #4a4a50 !important;
 }
