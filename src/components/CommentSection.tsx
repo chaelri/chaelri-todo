@@ -1,20 +1,27 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   collection,
   query,
   orderBy,
   onSnapshot,
   addDoc,
+  deleteDoc,
+  doc,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
-export default function CommentSection({ todoId }: { todoId: string }) {
+export default function CommentSection({
+  todoId,
+  showToast,
+}: {
+  todoId: string;
+  showToast: (msg: string) => void;
+}) {
   const [comments, setComments] = useState<any[]>([]);
   const [text, setText] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
 
-  // LIVE updates
+  // LIVE COMMENTS
   useEffect(() => {
     const q = query(
       collection(db, "todos", todoId, "comments"),
@@ -26,19 +33,13 @@ export default function CommentSection({ todoId }: { todoId: string }) {
         id: d.id,
         ...d.data(),
       }));
-
       setComments(list);
-
-      // Auto-scroll to bottom
-      setTimeout(
-        () => bottomRef.current?.scrollIntoView({ behavior: "smooth" }),
-        80
-      );
     });
 
     return () => unsub();
   }, [todoId]);
 
+  // ADD COMMENT
   async function handleAdd() {
     if (!text.trim()) return;
 
@@ -48,6 +49,7 @@ export default function CommentSection({ todoId }: { todoId: string }) {
     });
 
     setText("");
+    showToast("Comment added"); // toast
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -55,6 +57,12 @@ export default function CommentSection({ todoId }: { todoId: string }) {
       e.preventDefault();
       handleAdd();
     }
+  }
+
+  // DELETE COMMENT
+  async function handleDelete(id: string) {
+    await deleteDoc(doc(db, "todos", todoId, "comments", id));
+    showToast("Comment deleted");
   }
 
   return (
@@ -81,19 +89,47 @@ export default function CommentSection({ todoId }: { todoId: string }) {
           key={c.id}
           style={{
             background: "rgba(0,0,0,0.05)",
-            padding: "6px 10px",
+            padding: "6px 10px 8px",
             borderRadius: 8,
-            marginBottom: 6,
-            fontSize: 14,
+            marginBottom: 8,
             width: "fit-content",
             maxWidth: "85%",
           }}
         >
-          {c.text}
+          <div style={{ fontSize: 14 }}>{c.text}</div>
+
+          {/* timestamp + delete button */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: 4,
+              alignItems: "center",
+              fontSize: 12,
+              opacity: 0.6,
+            }}
+          >
+            <span>
+              {c.createdAt?.toDate ? c.createdAt.toDate().toLocaleString() : ""}
+            </span>
+
+            <button
+              onClick={() => handleDelete(c.id)}
+              style={{
+                marginLeft: 10,
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                fontSize: 14,
+              }}
+            >
+              🗑
+            </button>
+          </div>
         </div>
       ))}
 
-      {/* Input */}
+      {/* COMMENT INPUT */}
       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
         <input
           type="text"
@@ -130,8 +166,6 @@ export default function CommentSection({ todoId }: { todoId: string }) {
           ➤
         </button>
       </div>
-
-      <div ref={bottomRef} />
     </div>
   );
 }

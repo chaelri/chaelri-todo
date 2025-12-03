@@ -374,8 +374,7 @@ export default function App() {
           onToggleDone={toggleDone}
           onEdit={editTodo}
           onImageClick={(url) => setImageModalUrl(url)}
-          onAddComment={addComment}
-          onLoadComments={loadComments}
+          showToast={showToast} // <--- add this
         />
       </main>
 
