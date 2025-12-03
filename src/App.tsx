@@ -314,37 +314,37 @@ export default function App() {
   // ------------------------------
   //
   return (
-    <div className="app-container">
-    <VideoBackground darkMode={darkMode} />
+    <>
+      <div className="app-container">
+        <VideoBackground darkMode={darkMode} />
 
+        <header>
+          <h1>CharLa ToDo</h1>
+          <button onClick={() => setDarkMode((s) => !s)}>
+            {darkMode ? "Light" : "Dark"}
+          </button>
+        </header>
 
-      <header>
-        <h1>CharLa ToDo</h1>
-        <button onClick={() => setDarkMode((s) => !s)}>
-          {darkMode ? "Light" : "Dark"}
-        </button>
-      </header>
-
-      <main>
-        {/* Keep your existing inline form for fallback but hide visually on larger screens.
+        <main>
+          {/* Keep your existing inline form for fallback but hide visually on larger screens.
             We keep rendering it here to avoid removing functionality; primary add now via modal. */}
-        <div style={{ display: "none" }}>
-          <TodoForm
-            onAdd={addTodo}
-            uploading={uploading}
-            onBeforeAdd={requestNotificationsIfNeeded}
-          />
-        </div>
-
-        <TodoList
-          todos={todos}
-          onDelete={deleteTodo}
-          onToggleDone={toggleDone}
-          onEdit={editTodo}
-          onImageClick={(url) => setImageModalUrl(url)}
-          showToast={showToast} // <--- add this
-        />
-      </main>
+          <div style={{ display: "none" }}>
+            <TodoForm
+              onAdd={addTodo}
+              uploading={uploading}
+              onBeforeAdd={requestNotificationsIfNeeded}
+            />
+          </div>
+        </main>
+      </div>
+      <TodoList
+        todos={todos}
+        onDelete={deleteTodo}
+        onToggleDone={toggleDone}
+        onEdit={editTodo}
+        onImageClick={(url) => setImageModalUrl(url)}
+        showToast={showToast} // <--- add this
+      />
 
       {/* Floating centered Add button (FAB) */}
       <button
@@ -451,6 +451,6 @@ export default function App() {
           <Toast key={t.id} toast={t} onClose={removeToast} />
         ))}
       </div>
-    </div>
+    </>
   );
 }

@@ -729,15 +729,28 @@ body.dark .comment {
 --------------------------------------------------*/
 
 /* Main container holding the stacked cards */
+/* -------------------------------------------------
+   VERTICAL CAROUSEL TRUE CENTER FIX
+--------------------------------------------------*/
 .carousel-vertical {
-  position: relative;
-  height: calc(100vh - 120px); /* leaves space for header + form */
-  overflow: hidden;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 700px;
+  height: 70vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  overflow: hidden;
   perspective: 1200px;
-  margin-top: 20px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.carousel-card {
+  pointer-events: auto;
 }
 
 /*
