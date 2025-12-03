@@ -50,13 +50,7 @@ export default function App() {
     const id = String(Math.random()).slice(2);
     setToasts((s) => [...s, { id, message, timeout }]);
   }
-  function removeToast(id: string, undo = false) {
-    if (undo && pendingDelete) {
-      // restore the deleted item
-      addDoc(collection(db, "todos"), pendingDelete.data);
-      setPendingDelete(null);
-      showToast("Restored");
-    }
+  function removeToast(id: string) {
     setToasts((s) => s.filter((t) => t.id !== id));
   }
 
