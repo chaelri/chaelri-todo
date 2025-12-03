@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
 import Toast from "./components/Toast";
-import VoxelBackground from "./components/VoxelBackground";
+import VideoBackground from "./components/VideoBackground";
 
 import { db, storage, messaging } from "./firebase";
 import {
@@ -315,7 +315,7 @@ export default function App() {
   //
   return (
     <div className="app-container">
-    <VoxelBackground darkMode={darkMode} />
+    <VideoBackground darkMode={darkMode} />
 
 
       <header>
