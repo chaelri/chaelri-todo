@@ -373,8 +373,8 @@ export default function App() {
           onToggleDone={toggleDone}
           onEdit={editTodo}
           onImageClick={(url) => setImageModalUrl(url)}
-          onAddComment={addComment} // ⭐ ADD THIS
-          onLoadComments={loadComments} // ⭐ ADD THIS
+          onAddComment={addComment}
+          onLoadComments={loadComments}
         />
       </main>
 
@@ -392,8 +392,7 @@ export default function App() {
           height: 72,
           borderRadius: 36,
           border: "none",
-          background:
-            "linear-gradient(135deg, rgba(200,140,255,1), rgba(240,120,200,1))",
+          background: "linear-gradient(135deg, #a855f7, rgba(240,120,200,1))",
           color: "white",
           fontSize: 20,
           boxShadow: "0 12px 30px rgba(96,43,182,0.18)",

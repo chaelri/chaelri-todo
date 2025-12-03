@@ -1,14 +1,23 @@
 import React, { useState } from "react";
+import CommentSection from "./CommentSection"; // <-- import the comment component
+
+interface TodoItem {
+  id: string;
+  text: string | null;
+  imageUrl?: string | null;
+  createdAt: any;
+  done?: boolean;
+}
 
 interface Props {
-  todos: any[];
+  todos: TodoItem[];
   onDelete: (id: string) => void;
   onToggleDone: (id: string, current: boolean) => void;
   onEdit: (id: string, newText: string) => void;
   onImageClick: (url: string) => void;
 
-  onAddComment: (todoId: string, text: string) => void; // NEW
-  onLoadComments: (todoId: string) => Promise<any>; // NEW
+  onAddComment: (todoId: string, text: string) => void;
+  onLoadComments: (todoId: string) => Promise<any[]>;
 }
 
 export default function TodoList({
@@ -17,6 +26,8 @@ export default function TodoList({
   onToggleDone,
   onEdit,
   onImageClick,
+  onAddComment, // ← destructure
+  onLoadComments, // ← destructure
 }: Props) {
   const [editingId, setEditingId] = useState<string | null>(null);
 
