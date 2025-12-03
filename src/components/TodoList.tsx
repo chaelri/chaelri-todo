@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 
 interface Props {
-  todos: {
-    id: string;
-    text: string | null;
-    imageUrl?: string | null;
-    createdAt: any;
-    done?: boolean;
-  }[];
+  todos: any[];
   onDelete: (id: string) => void;
   onToggleDone: (id: string, current: boolean) => void;
   onEdit: (id: string, newText: string) => void;
   onImageClick: (url: string) => void;
+
+  onAddComment: (todoId: string, text: string) => void; // NEW
+  onLoadComments: (todoId: string) => Promise<any>; // NEW
 }
 
 export default function TodoList({
@@ -164,6 +161,11 @@ export default function TodoList({
                     ? t.createdAt.toDate().toLocaleString()
                     : ""}
                 </small>
+                <CommentSection
+                  todoId={t.id}
+                  onAddComment={onAddComment}
+                  onLoadComments={onLoadComments}
+                />
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

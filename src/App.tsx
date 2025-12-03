@@ -134,6 +134,36 @@ export default function App() {
     }
   }
 
+  // Load comments for a todo
+  async function loadComments(todoId: string) {
+    const q = query(
+      collection(db, "todos", todoId, "comments"),
+      orderBy("createdAt", "asc")
+    );
+
+    return new Promise((resolve) => {
+      onSnapshot(q, (snap) => {
+        const items = snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+        resolve(items);
+      });
+    });
+  }
+
+  // Add comment
+  async function addComment(todoId: string, text: string) {
+    if (!text.trim()) return;
+
+    await addDoc(collection(db, "todos", todoId, "comments"), {
+      text,
+      createdAt: Timestamp.now(),
+    });
+
+    showToast("Comment added");
+  }
+
   //
   // ------------------------------
   // DELETE TODO
@@ -343,6 +373,8 @@ export default function App() {
           onToggleDone={toggleDone}
           onEdit={editTodo}
           onImageClick={(url) => setImageModalUrl(url)}
+          onAddComment={addComment} // ⭐ ADD THIS
+          onLoadComments={loadComments} // ⭐ ADD THIS
         />
       </main>
 
